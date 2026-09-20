@@ -1,0 +1,75 @@
+{
+  "name": "expense-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=20.11.0"
+  },
+  "scripts": {
+    "dev": "next dev --port 4000",
+    "build": "next build",
+    "start": "next start --port 4000",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --project unit",
+    "test:watch": "vitest --project unit",
+    "test:integration": "vitest run --project integration",
+    "test:offline": "vitest run --project offline",
+    "test:all": "vitest run",
+    "test:e2e": "tsx scripts/run-e2e.ts",
+    "test:e2e:pwa": "playwright test tests/e2e/pwa-offline.spec.ts",
+    "db:indexes": "tsx --env-file=.env.local scripts/create-indexes.ts",
+    "icons:generate": "tsx scripts/generate-icons.ts",
+    "verify": "npm run typecheck && npm run lint && npm run test",
+    "prepare": "husky || exit 0"
+  },
+  "dependencies": {
+    "@auth/core": "0.41.3",
+    "@chakra-ui/react": "3.37.0",
+    "@emotion/react": "11.14.0",
+    "bcryptjs": "3.0.3",
+    "decimal.js": "10.6.0",
+    "dexie": "4.4.5",
+    "mongodb": "6.21.0",
+    "next": "15.5.24",
+    "next-auth": "5.0.0-beta.32",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "zod": "4.5.4"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "3.3.1",
+    "@playwright/test": "1.62.1",
+    "@testing-library/dom": "10.4.1",
+    "@testing-library/jest-dom": "6.9.1",
+    "@testing-library/react": "16.3.3",
+    "@types/node": "22.20.1",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
+    "@vitejs/plugin-react": "5.2.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "15.5.24",
+    "eslint-config-prettier": "10.1.8",
+    "fake-indexeddb": "6.2.2",
+    "husky": "9.1.7",
+    "jsdom": "26.1.0",
+    "lint-staged": "16.4.0",
+    "mongodb-memory-server": "10.4.3",
+    "prettier": "3.9.6",
+    "tsx": "4.23.13",
+    "typescript": "5.9.3",
+    "vitest": "4.1.11"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css}": [
+      "prettier --write"
+    ]
+  }
+}

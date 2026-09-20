@@ -1,0 +1,9 @@
+.next
+node_modules
+coverage
+out
+playwright-report
+test-results
+package-lock.json
+public/sw.js
+docs/**

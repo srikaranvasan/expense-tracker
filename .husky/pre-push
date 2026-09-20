@@ -1,0 +1,3 @@
+# A push must not break type checking or the financial domain tests.
+npm run typecheck
+npm run test

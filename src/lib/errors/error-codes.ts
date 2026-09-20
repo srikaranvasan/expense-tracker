@@ -1,0 +1,64 @@
+/**
+ * Stable, machine-readable error codes.
+ *
+ * The UI branches on these codes, never on message strings
+ * (docs/10-API-CONTRACT.md section 31).
+ */
+export const ERROR_CODES = {
+  // Generic
+  VALIDATION_ERROR: "VALIDATION_ERROR",
+  UNAUTHORIZED: "UNAUTHORIZED",
+  FORBIDDEN: "FORBIDDEN",
+  NOT_FOUND: "NOT_FOUND",
+  CONFLICT: "CONFLICT",
+  RATE_LIMITED: "RATE_LIMITED",
+  INTERNAL_ERROR: "INTERNAL_ERROR",
+  SERVICE_UNAVAILABLE: "SERVICE_UNAVAILABLE",
+
+  // Money / amounts
+  INVALID_AMOUNT: "INVALID_AMOUNT",
+  INVALID_CURRENCY: "INVALID_CURRENCY",
+
+  // References
+  INVALID_ACCOUNT: "INVALID_ACCOUNT",
+  INVALID_CATEGORY: "INVALID_CATEGORY",
+  INVALID_PERSON: "INVALID_PERSON",
+
+  // Expenses and splits
+  INVALID_SPLIT: "INVALID_SPLIT",
+  INVALID_SPLIT_TOTAL: "INVALID_SPLIT_TOTAL",
+  INVALID_PARTICIPANT: "INVALID_PARTICIPANT",
+  EXPENSE_HAS_SETTLEMENTS: "EXPENSE_HAS_SETTLEMENTS",
+
+  // Settlements
+  INVALID_SETTLEMENT: "INVALID_SETTLEMENT",
+  INVALID_SETTLEMENT_ALLOCATION: "INVALID_SETTLEMENT_ALLOCATION",
+  OVER_SETTLEMENT: "OVER_SETTLEMENT",
+
+  // Transfers and card payments
+  INVALID_TRANSFER: "INVALID_TRANSFER",
+  INVALID_CREDIT_CARD_PAYMENT: "INVALID_CREDIT_CARD_PAYMENT",
+
+  // Sync
+  SYNC_CONFLICT: "SYNC_CONFLICT",
+  SYNC_RETRYABLE_ERROR: "SYNC_RETRYABLE_ERROR",
+  DUPLICATE_OPERATION: "DUPLICATE_OPERATION",
+} as const;
+
+export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
+
+/**
+ * Codes that represent a temporary failure. The offline sync engine retries
+ * these and permanently fails everything else
+ * (docs/08-OFFLINE-SYNC.md sections 19-20).
+ */
+export const RETRYABLE_ERROR_CODES: ReadonlySet<ErrorCode> = new Set([
+  ERROR_CODES.SERVICE_UNAVAILABLE,
+  ERROR_CODES.SYNC_RETRYABLE_ERROR,
+  ERROR_CODES.RATE_LIMITED,
+  ERROR_CODES.INTERNAL_ERROR,
+]);
+
+export function isRetryableErrorCode(code: string): boolean {
+  return RETRYABLE_ERROR_CODES.has(code as ErrorCode);
+}
