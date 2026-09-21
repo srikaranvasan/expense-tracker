@@ -69,3 +69,6 @@ export const tokens = defineTokens({
     },
   },
 });
+
+/** Re-exported so `@/theme/tokens` remains the one import site for colour values. */
+export { RAW_COLORS } from "./raw-colors";

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { publicConfig } from "@/config/env";
+import { RAW_COLORS } from "@/theme/tokens";
 
 /**
  * Web app manifest, served at `/manifest.webmanifest`.
@@ -30,10 +31,9 @@ export default function manifest(): MetadataRoute.Manifest {
     display_override: ["standalone", "minimal-ui"],
     orientation: "portrait",
 
-    // Matches `surface` in the theme, so the splash screen does not flash a different
-    // colour before the app paints.
-    background_color: "#ffffff",
-    theme_color: "#ffffff",
+    // From the theme, so the splash screen cannot drift from what the app paints.
+    background_color: RAW_COLORS.surface,
+    theme_color: RAW_COLORS.surface,
 
     categories: ["finance", "productivity", "utilities"],
     lang: "en",

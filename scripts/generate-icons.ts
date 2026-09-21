@@ -18,12 +18,28 @@
 import { deflateSync } from "node:zlib";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
+import { RAW_COLORS } from "../src/theme/raw-colors";
 
 // --- Brand ------------------------------------------------------------------
 
-/** `colors.brand.500` from src/theme/tokens.ts. Keep these in step. */
-const BRAND = { r: 0x4f, g: 0x5b, b: 0xd5 } as const;
-const MARK = { r: 0xff, g: 0xff, b: 0xff } as const;
+/**
+ * Parses `#rrggbb`.
+ *
+ * The colours come from `src/theme/raw-colors.ts` rather than being repeated here, so a
+ * palette change reaches the icons too. That module is deliberately dependency-free, which is
+ * what makes it importable from a plain Node script.
+ */
+function parseHex(hex: string): { r: number; g: number; b: number } {
+  const value = hex.replace("#", "");
+  return {
+    r: Number.parseInt(value.slice(0, 2), 16),
+    g: Number.parseInt(value.slice(2, 4), 16),
+    b: Number.parseInt(value.slice(4, 6), 16),
+  };
+}
+
+const BRAND = parseHex(RAW_COLORS.brand);
+const MARK = parseHex(RAW_COLORS.surface);
 
 /**
  * iOS applies its own rounding to `apple-touch-icon`, so that one is drawn square.
@@ -247,7 +263,7 @@ function renderSvg(): string {
     })
     .join("\n");
 
-  const brand = `#${BRAND.r.toString(16)}${BRAND.g.toString(16)}${BRAND.b.toString(16)}`;
+  const brand = RAW_COLORS.brand;
 
   return [
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="${size}" height="${size}" role="img" aria-label="Expense Tracker">`,

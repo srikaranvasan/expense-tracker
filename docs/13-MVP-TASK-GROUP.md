@@ -408,70 +408,70 @@ completed.
 
 ### Unit Tests
 
-* [ ] Money calculations
-* [ ] Equal split
-* [ ] Custom split
-* [ ] Percentage split
-* [ ] Person balance
-* [ ] Settlement allocation
-* [ ] Account balance
-* [ ] Credit-card calculations
-* [ ] Transaction classification
-* [ ] Validation rules
+* [x] Money calculations
+* [x] Equal split
+* [x] Custom split
+* [x] Percentage split
+* [x] Person balance
+* [x] Settlement allocation
+* [x] Account balance
+* [x] Credit-card calculations
+* [x] Transaction classification
+* [x] Validation rules
 
 ### Integration Tests
 
-* [ ] Create expense
-* [ ] Create shared expense
-* [ ] Create settlement
-* [ ] Create transfer
-* [ ] Create credit-card payment
-* [ ] Atomic transactions
-* [ ] Authorization
-* [ ] Idempotency
-* [ ] Settlement concurrency
+* [x] Create expense
+* [x] Create shared expense
+* [x] Create settlement
+* [x] Create transfer
+* [x] Create credit-card payment
+* [x] Atomic transactions
+* [x] Authorization
+* [x] Idempotency
+* [x] Settlement concurrency
 
 ### E2E Tests
 
-* [ ] Login
-* [ ] Create personal expense
-* [ ] Create shared expense
-* [ ] Settle expense
-* [ ] Transfer money
-* [ ] Pay credit card
-* [ ] Offline expense
-* [ ] Offline sync
+* [x] Login
+* [x] Create personal expense
+* [ ] Create shared expense — covered by integration tests; E2E deferred
+* [ ] Settle expense — covered by integration tests; E2E deferred
+* [ ] Transfer money — covered by integration tests; E2E deferred
+* [ ] Pay credit card — covered by integration tests; E2E deferred
+* [x] Offline expense
+* [x] Offline sync
 
 ---
 
 # 20. Final MVP Hardening
 
-* [ ] Review all API endpoints
-* [ ] Review authorization
-* [ ] Review financial calculations
-* [ ] Review settlement logic
-* [ ] Review offline sync
-* [ ] Review database indexes
-* [ ] Review error handling
-* [ ] Review logging
-* [ ] Review theme usage: no hard-coded colours, spacing, or font sizes
-* [ ] Verify only one styling system is present
-* [ ] Verify colour is never the only signal for a financial meaning
-* [ ] Remove debug code
-* [ ] Remove unused dependencies
-* [ ] Run type checking
-* [ ] Run lint
-* [ ] Run unit tests
-* [ ] Run integration tests
-* [ ] Run E2E tests
-* [ ] Run production build
-* [ ] Test PWA installation
-* [ ] Test on iPhone
-* [ ] Test on desktop
-* [ ] Configure production environment
-* [ ] Configure MongoDB backups
-* [ ] Verify restore procedure
-* [ ] Deploy MVP
+* [x] Review all API endpoints
+* [x] Review authorization
+* [x] Review financial calculations
+* [x] Review settlement logic
+* [x] Review offline sync
+* [x] Review database indexes
+* [x] Review error handling
+* [x] Review logging
+* [x] Review theme usage: no hard-coded colours, spacing, or font sizes
+* [x] Verify only one styling system is present
+* [x] Verify colour is never the only signal for a financial meaning
+* [x] Remove debug code
+* [x] Remove unused dependencies
+* [x] Run type checking
+* [x] Run lint
+* [x] Run unit tests
+* [x] Run integration tests
+* [x] Run E2E tests
+* [x] Run production build
+* [ ] Test PWA installation — needs a physical device; criteria verified, install not performed
+* [ ] Test on iPhone — needs a physical device
+* [ ] Test on desktop — needs manual installation
+* [ ] Configure production environment — deployment task, out of dev/staging scope
+* [ ] Configure MongoDB backups — deployment task, out of dev/staging scope
+* [ ] Verify restore procedure — deployment task, out of dev/staging scope
+* [ ] Deploy MVP — deployment task, out of dev/staging scope
 
 ---
 

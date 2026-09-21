@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import type { Page } from "@playwright/test";
+import { waitForActivation, waitForServiceWorkerControl } from "./helpers/pwa";
 
 /**
  * PWA verification in a real browser.
@@ -14,64 +14,16 @@ import type { Page } from "@playwright/test";
  * public page keeps the test focused on the worker.
  */
 
-/**
- * Waits until the worker has finished activating.
+/*
+ * Readiness helpers live in ./helpers/pwa so the offline journey spec can use the same ones.
+ * Knowing when the worker is genuinely in charge is the difference between a test that
+ * verifies behaviour and one that passes or fails on timing.
  *
- * `navigator.serviceWorker.ready` resolves as soon as there is an *active* worker, which
- * can still be in the `activating` state while its `activate` handler runs. Asserting
- * anything before that is a race: the precache is part of install, and the first
- * navigation the worker handles must find the offline page already stored.
+ * Note that these specs cut the network with `context.setOffline` alone, without the
+ * `navigator.onLine` override the journey spec installs. That is deliberate: what is under
+ * test here is the worker, which reacts to requests failing rather than to the browser's
+ * connectivity hint.
  */
-async function waitForActivation(page: Page) {
-  await page.evaluate(async () => {
-    const registration = await navigator.serviceWorker.ready;
-    const worker = registration.active;
-    if (!worker || worker.state === "activated") return;
-
-    await new Promise<void>((resolve) => {
-      const check = () => {
-        if (worker.state === "activated") {
-          worker.removeEventListener("statechange", check);
-          resolve();
-        }
-      };
-      worker.addEventListener("statechange", check);
-      check();
-    });
-  });
-}
-
-/**
- * Waits until the worker is activated, controlling this page, and has precached the
- * fallback.
- *
- * The precache check is the meaningful gate. Without it a test can go offline in the gap
- * between activation and `cache.add` completing, and then get the worker's inline
- * last-resort response instead of the real /offline page — a pass or fail decided by
- * timing rather than by behaviour.
- */
-async function waitForServiceWorkerControl(page: Page) {
-  await waitForActivation(page);
-
-  await page.evaluate(async () => {
-    if (navigator.serviceWorker.controller) return;
-    // The worker claims clients during activation, which can land just after this point.
-    await new Promise<void>((resolve) => {
-      navigator.serviceWorker.addEventListener("controllerchange", () => resolve(), {
-        once: true,
-      });
-      setTimeout(resolve, 5_000);
-    });
-  });
-
-  await page.waitForFunction(async () => {
-    for (const name of await caches.keys()) {
-      const cache = await caches.open(name);
-      if (await cache.match("/offline")) return true;
-    }
-    return false;
-  });
-}
 
 test.describe("PWA", () => {
   test("registers a service worker that takes control of the page", async ({ page }) => {

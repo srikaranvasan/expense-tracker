@@ -109,10 +109,20 @@ export function ExpenseForm({
       return;
     }
 
-    // No server id exists yet, so the detail page cannot be opened. The list reads from
-    // the server, so it will not show this row until sync completes either — saying so
-    // plainly is better than navigating somewhere that looks empty.
-    router.push("/transactions?saved=offline");
+    /*
+     * No server id exists yet, so the detail page cannot be opened. The list reads from the
+     * server, so it will not show this row until sync completes either.
+     *
+     * Navigates to the bare path, without the `?saved=offline` marker it used to carry. Two
+     * reasons, both found by `tests/e2e/offline-expense.spec.ts`: nothing ever read the
+     * parameter, and the service worker caches pages by exact URL — so the one navigation
+     * guaranteed to happen while offline was the one guaranteed to miss the cache, landing
+     * the user on the offline page instead of their transactions.
+     *
+     * What the marker was meant to convey is already on screen: the sync status bar reads
+     * "Offline · will sync later" with the queued count.
+     */
+    router.push("/transactions");
   }
 
   const errors = {

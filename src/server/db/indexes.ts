@@ -43,8 +43,18 @@ const INDEXES: Record<string, IndexDescription[]> = {
     { key: { userId: 1, deletedAt: 1 }, name: "userId_deletedAt" },
     { key: { userId: 1, clientId: 1 }, name: "userId_clientId_unique", unique: true },
     { key: { userId: 1, updatedAt: 1, _id: 1 }, name: "userId_updatedAt_id" },
-    // Description search for the transaction list.
-    { key: { userId: 1, description: "text" }, name: "userId_description_text" },
+    /*
+     * There is deliberately no text index on `description`.
+     *
+     * One was declared here until the group 20 review. Nothing in the codebase uses `$text`:
+     * the transaction list searches with a case-insensitive `$regex` (escaped, see
+     * `transaction-repository.ts`), and a substring regex cannot use a text index in any case.
+     * So it cost storage and write throughput on every transaction and earned nothing.
+     *
+     * If search needs to scale, the choice is between a text index with word-match semantics —
+     * which would stop "groc" matching "groceries" — and Atlas Search. Both are deliberate
+     * changes, not an index to leave lying around in case it helps.
+     */
   ],
 
   [COLLECTIONS.expenseSplits]: [

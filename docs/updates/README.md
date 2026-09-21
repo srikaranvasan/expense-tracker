@@ -30,7 +30,7 @@ deliberately left for later.
 | 16 | [PWA](GROUP-16-PWA.md) | Complete |
 | 17 | [Security](GROUP-17-SECURITY.md) | Complete (dev/staging scope) |
 | 18 | [Error Handling](GROUP-18-ERROR-HANDLING.md) | Complete |
-| 19 | Testing | Not started |
+| 19 | [Testing](GROUP-19-TESTING.md) | Complete (4 E2E journeys deferred) |
 | 20 | Final MVP Hardening | Not started |
 
 ## Reading order for a new developer

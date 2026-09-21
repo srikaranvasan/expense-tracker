@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { publicConfig } from "@/config/env";
 import { SkipToContent } from "@/components/layout/SkipToContent";
+import { RAW_COLORS } from "@/theme/tokens";
 import { ServiceWorkerManager } from "@/features/pwa/components/ServiceWorkerManager";
 import { Providers } from "./providers";
 
@@ -58,7 +59,7 @@ export const viewport: Viewport = {
   // Extends under the iPhone's rounded corners and home indicator, which is what makes an
   // installed app look native rather than letterboxed.
   viewportFit: "cover",
-  themeColor: "#ffffff",
+  themeColor: RAW_COLORS.surface,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
