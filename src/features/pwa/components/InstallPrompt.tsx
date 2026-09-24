@@ -1,6 +1,7 @@
 "use client";
 
 import { Box, HStack, List, Stack, Text } from "@chakra-ui/react";
+import { Icon } from "@/components/icons/Icon";
 import { Button } from "@/components/ui/Button";
 import { useInstallPrompt } from "@/offline/hooks/useInstallPrompt";
 
@@ -22,18 +23,33 @@ export function InstallPrompt() {
   if (!canPrompt && !needsManualSteps) return null;
 
   return (
-    <Box borderBottomWidth="1px" borderColor="line" bg="surface.muted" px="4" py="3">
-      <Stack maxW="content" mx="auto" w="full" gap="2">
+    <Box
+      // A bordered band across the chrome rather than a card: it belongs to the frame, like the
+      // offline banner above it, so it takes the same full-ink rule.
+      borderBottomWidth="thick"
+      borderColor="line"
+      bg="surface.muted"
+      paddingInline={{ base: "16px", md: "32px" }}
+      paddingBlock="12px"
+    >
+      <Stack maxW="content" mx="auto" w="full" gap="10px">
         <HStack justify="space-between" align="flex-start" gap="3">
-          <Box minW="0">
-            <Text fontSize="sm" fontWeight="medium">
-              Install Expense Tracker
-            </Text>
-            <Text fontSize="xs" color="content.muted">
-              {/* The offline capability is the reason to install, so it leads. */}
-              Add it to your home screen to open it faster and record expenses offline.
-            </Text>
-          </Box>
+          <HStack align="flex-start" gap="10px" minW="0">
+            {/* Decorative: the heading beside it says the same thing. */}
+            <Box color="content.muted" mt="2px">
+              <Icon name="install" size="inline" />
+            </Box>
+
+            <Box minW="0">
+              <Text fontFamily="heading" fontWeight="700" fontSize="row" color="content">
+                Install Expense Tracker
+              </Text>
+              <Text fontSize="subtitle" color="content.subtle">
+                {/* The offline capability is the reason to install, so it leads. */}
+                Add it to your home screen to open it faster and record expenses offline.
+              </Text>
+            </Box>
+          </HStack>
 
           <HStack gap="2" flexShrink="0">
             {canPrompt ? (
@@ -48,7 +64,16 @@ export function InstallPrompt() {
         </HStack>
 
         {needsManualSteps ? (
-          <List.Root as="ol" fontSize="xs" color="content.muted" ps="4" gap="0.5">
+          // Mono and numbered: these are steps to follow in a menu, and a monospaced list reads as
+          // instructions rather than prose.
+          <List.Root
+            as="ol"
+            fontFamily="mono"
+            fontSize="eyebrow"
+            color="content.muted"
+            ps="18px"
+            gap="4px"
+          >
             {steps.map((step) => (
               <List.Item key={step}>{step}</List.Item>
             ))}
@@ -56,7 +81,7 @@ export function InstallPrompt() {
         ) : null}
 
         {needsManualSteps && platform === "ios" ? (
-          <Text fontSize="xs" color="content.subtle">
+          <Text fontSize="meta" color="content.subtle">
             Safari is the only browser on iPhone that can add apps to the home screen.
           </Text>
         ) : null}

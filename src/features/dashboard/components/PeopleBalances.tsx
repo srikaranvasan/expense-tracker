@@ -1,8 +1,9 @@
-import { Box, Text } from "@chakra-ui/react";
-import { RowLink } from "@/components/ui/AppLink";
+import { Box, HStack, Text } from "@chakra-ui/react";
+import { CardActionLink, RowLink } from "@/components/ui/AppLink";
+import { Avatar } from "@/components/ui/Avatar";
+import type { AvatarRelation } from "@/components/ui/Avatar";
 import { BalanceBadge } from "@/components/ui/BalanceBadge";
 import { Card, CardBody, CardHeader, CardList } from "@/components/ui/Card";
-import { AppLink } from "@/components/ui/AppLink";
 import type { PersonView } from "@/features/people/view-models/person-view-model";
 
 export type PeopleBalancesProps = {
@@ -27,11 +28,7 @@ export function PeopleBalances({ title, subtitle, people, emptyText }: PeopleBal
         title={title}
         subtitle={subtitle}
         action={
-          people.length > 0 ? (
-            <AppLink href="/people" fontSize="xs" flexShrink="0">
-              See all
-            </AppLink>
-          ) : undefined
+          people.length > 0 ? <CardActionLink href="/people">See all</CardActionLink> : undefined
         }
       />
 
@@ -45,15 +42,24 @@ export function PeopleBalances({ title, subtitle, people, emptyText }: PeopleBal
         <CardList>
           {people.map((person) => (
             <RowLink key={person.id} href={`/people/${person.id}`}>
-              <Box minW="0">
-                <Text fontSize="sm" fontWeight="medium" truncate>
-                  {person.name}
-                </Text>
-                <Text fontSize="xs" color="content.muted">
-                  {person.balance.unsettledCount}{" "}
-                  {person.balance.unsettledCount === 1 ? "expense" : "expenses"} outstanding
-                </Text>
-              </Box>
+              <HStack gap="12px" minW="0">
+                {/*
+                  The fill encodes direction — mint when they owe you, coral when you owe them — which
+                  is a glance-level cue and useless to anyone who cannot see hue. That is why it is
+                  only ever drawn beside a `BalanceBadge`, which says the direction in words.
+                */}
+                <Avatar name={person.name} relation={avatarRelation(person)} />
+
+                <Box minW="0">
+                  <Text fontSize="row" fontWeight="600" truncate>
+                    {person.name}
+                  </Text>
+                  <Text fontSize="meta" color="content.subtle">
+                    {person.balance.unsettledCount}{" "}
+                    {person.balance.unsettledCount === 1 ? "expense" : "expenses"} outstanding
+                  </Text>
+                </Box>
+              </HStack>
 
               <BalanceBadge
                 direction={person.balance.direction}
@@ -67,4 +73,22 @@ export function PeopleBalances({ title, subtitle, people, emptyText }: PeopleBal
       )}
     </Card>
   );
+}
+
+/**
+ * Maps a balance direction onto an avatar fill.
+ *
+ * `neutral` for a settled person. These two panels only list people with an outstanding balance, so
+ * that branch is unreachable today — it exists so the function is total over the union rather than
+ * asserting a state the type still permits.
+ */
+function avatarRelation(person: PersonView): AvatarRelation {
+  switch (person.balance.direction) {
+    case "person_owes_user":
+      return "owesYou";
+    case "user_owes_person":
+      return "youOwe";
+    default:
+      return "neutral";
+  }
 }

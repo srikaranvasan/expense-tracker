@@ -19,6 +19,7 @@ export type TransactionHistoryProps = {
   accountNames: Record<string, string>;
   categoryNames: Record<string, string>;
   personNames: Record<string, string>;
+  categoryIcons: Record<string, string | null>;
 };
 
 type ListPayload = {
@@ -28,6 +29,7 @@ type ListPayload = {
   accountNames: Record<string, string>;
   categoryNames: Record<string, string>;
   personNames: Record<string, string>;
+  categoryIcons: Record<string, string | null>;
 };
 
 /**
@@ -53,13 +55,19 @@ export function TransactionHistory({
   accountNames,
   categoryNames,
   personNames,
+  categoryIcons,
 }: TransactionHistoryProps) {
   const searchParams = useSearchParams();
 
   const [items, setItems] = useState<TransactionListItem[]>([...initialItems]);
   const [cursor, setCursor] = useState(initialCursor);
   const [hasMore, setHasMore] = useState(initialHasMore);
-  const [names, setNames] = useState({ accountNames, categoryNames, personNames });
+  const [names, setNames] = useState({
+    accountNames,
+    categoryNames,
+    personNames,
+    categoryIcons,
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -102,6 +110,7 @@ export function TransactionHistory({
         accountNames: { ...current.accountNames, ...body.data.accountNames },
         categoryNames: { ...current.categoryNames, ...body.data.categoryNames },
         personNames: { ...current.personNames, ...body.data.personNames },
+        categoryIcons: { ...current.categoryIcons, ...body.data.categoryIcons },
       }));
 
       setCursor(body.data.nextCursor);
@@ -122,6 +131,7 @@ export function TransactionHistory({
         accountNames={names.accountNames}
         categoryNames={names.categoryNames}
         personNames={names.personNames}
+        categoryIcons={names.categoryIcons}
       />
 
       {error ? <Alert tone="error">{error}</Alert> : null}
@@ -133,8 +143,21 @@ export function TransactionHistory({
           </Button>
         </Box>
       ) : (
-        <Text textAlign="center" fontSize="xs" color="content.muted">
-          That is everything{items.length > 0 ? ` — ${items.length} shown` : ""}.
+        /*
+          The end of the ledger, stamped rather than stated. Mono, tracked, uppercase and centred, as
+          drawn — the same register as the AS OF eyebrow, and it says something a scrollbar cannot:
+          that this is *everything*, not just everything loaded so far.
+        */
+        <Text
+          textAlign="center"
+          textStyle="amount"
+          fontSize="meta"
+          letterSpacing="0.06em"
+          textTransform="uppercase"
+          color="content.subtle"
+          mt="28px"
+        >
+          That is everything{items.length > 0 ? ` — ${items.length} shown` : ""}
         </Text>
       )}
     </Stack>

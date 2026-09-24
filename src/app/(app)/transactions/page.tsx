@@ -115,6 +115,7 @@ export default async function TransactionsPage({
           accountNames={view.accountNames}
           categoryNames={view.categoryNames}
           personNames={view.personNames}
+          categoryIcons={view.categoryIcons}
         />
       )}
     </Box>

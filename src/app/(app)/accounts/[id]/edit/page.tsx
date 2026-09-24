@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Box } from "@chakra-ui/react";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Card, CardBody } from "@/components/ui/Card";
+import { accountParent } from "@/components/layout/Parents";
 import { AccountForm } from "@/features/accounts/components/AccountForm";
 import { getAccountDetailView } from "@/features/accounts/queries/account-queries";
 import { isAppError } from "@/lib/errors";
@@ -23,13 +23,17 @@ export default async function EditAccountPage({ params }: { params: Promise<{ id
 
   return (
     <Box as="section">
-      <PageHeader title="Edit account" description={account.name} />
+      {/*
+        The parent of an edit form is the **record**, not the list: `description` already names the
+        account, and group 46 made that name a destination. Cancelling and the back link now agree.
+      */}
+      <PageHeader
+        title="Edit account"
+        description={account.name}
+        parent={accountParent(account.id, account.name)}
+      />
 
-      <Card>
-        <CardBody>
-          <AccountForm currency={user.currency} account={account} />
-        </CardBody>
-      </Card>
+      <AccountForm currency={user.currency} account={account} />
     </Box>
   );
 }

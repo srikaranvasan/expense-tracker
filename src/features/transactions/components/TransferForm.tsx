@@ -2,13 +2,16 @@
 
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { HStack, Stack, Text } from "@chakra-ui/react";
+import { Stack } from "@chakra-ui/react";
 import { Alert } from "@/components/feedback/Alert";
-import { Button } from "@/components/ui/Button";
+import { AppLink } from "@/components/ui/AppLink";
+import { FormActions } from "@/components/ui/FormActions";
 import { AmountInput, Field, SelectInput, TextAreaInput, TextInput } from "@/components/ui/Field";
+import { FormLayout, ReferenceBox, TintPanel } from "@/components/ui/FormLayout";
 import { LIMITS } from "@/config/constants";
 import type { AccountOption } from "@/features/accounts/view-models/account-view-model";
 import { newClientId } from "@/lib/utils/client-id";
+import { referenceCodeFor } from "@/lib/utils/reference-code";
 import { createTransferAction, updateTransferAction } from "../actions/transfer-actions";
 import type { ActionState } from "../actions/expense-actions";
 import type { TransferDetailView } from "../view-models/transfer-view-model";
@@ -48,12 +51,17 @@ export function TransferForm({
   const router = useRouter();
   const isEdit = transfer !== undefined;
 
+  // The record on an edit, the activity list on a create. See the note in `AccountForm`.
+  const cancelHref = isEdit ? `/transactions/${transfer.id}` : "/transactions";
+
   const action = isEdit ? updateTransferAction.bind(null, transfer.id) : createTransferAction;
   const [state, formAction, pending] = useActionState(action, initialState);
 
   // One id per mounted form, so resubmitting after a validation failure cannot
   // create a second transfer.
   const clientId = useMemo(() => newClientId(), []);
+  // The reference the saved record will carry, known before the write. See `ExpenseForm`.
+  const referenceCode = useMemo(() => referenceCodeFor({ clientId }), [clientId]);
 
   const destinationOptions = useMemo(
     () => accountOptions.filter((option) => option.type !== "credit_card"),
@@ -82,7 +90,11 @@ export function TransferForm({
   // Two accounts are needed, and at least one of them must be able to receive money.
   if (accountOptions.length < 2 || destinationOptions.length === 0) {
     return (
-      <Alert tone="warning" title="Add another account first">
+      <Alert
+        tone="warning"
+        title="Add another account first"
+        action={<AppLink href="/accounts/new">Add an account</AppLink>}
+      >
         A transfer moves money between two of your own accounts, and the destination cannot be a
         credit card. Add a second bank or cash account, then record the transfer.
       </Alert>
@@ -100,114 +112,130 @@ export function TransferForm({
   }
 
   return (
-    <Stack asChild gap="4">
-      <form action={formAction} noValidate>
-        {state.message && !state.ok ? <Alert tone="error">{state.message}</Alert> : null}
+    <FormLayout
+      rail={
+        <>
+          {!isEdit ? (
+            <TintPanel eyebrow="Why this matters">
+              A transfer is not spending, so it will not appear in your monthly total. It moves both
+              account balances and nothing else.
+            </TintPanel>
+          ) : null}
 
-        {isEdit ? (
-          <input type="hidden" name="expectedSyncVersion" value={transfer.syncVersion} />
-        ) : (
-          <input type="hidden" name="clientId" value={clientId} />
-        )}
-
-        <Field id="amount" label={`Amount (${currency})`} errors={errors.amount} required>
-          <AmountInput
-            id="amount"
-            name="amount"
-            defaultValue={transfer?.amount.amount ?? ""}
-            placeholder="0.00"
-            autoFocus={!isEdit}
-            required
+          <ReferenceBox
+            code={isEdit ? transfer.referenceCode : referenceCode}
+            hint={
+              isEdit
+                ? "This reference never changes, including through an edit."
+                : "Kept for the life of the record. Every entry keeps a permanent reference, like a ledger line."
+            }
           />
-        </Field>
+        </>
+      }
+    >
+      <Stack asChild gap="22px">
+        <form action={formAction} noValidate>
+          {state.message && !state.ok ? <Alert tone="error">{state.message}</Alert> : null}
 
-        <Field id="fromAccountId" label="From" errors={errors.fromAccountId} required>
-          <SelectInput
-            id="fromAccountId"
-            name="fromAccountId"
-            value={fromAccountId}
-            onChange={(event) => handleFromChange(event.target.value)}
-            required
-          >
-            {accountOptions.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
-          </SelectInput>
-        </Field>
+          {isEdit ? (
+            <input type="hidden" name="expectedSyncVersion" value={transfer.syncVersion} />
+          ) : (
+            <input type="hidden" name="clientId" value={clientId} />
+          )}
 
-        <Field
-          id="toAccountId"
-          label="To"
-          hint="Paying a credit card is a card payment, not a transfer."
-          errors={errors.toAccountId}
-          required
-        >
-          <SelectInput
+          <Field id="amount" label={`Amount (${currency})`} errors={errors.amount} required>
+            <AmountInput
+              id="amount"
+              name="amount"
+              defaultValue={transfer?.amount.amount ?? ""}
+              placeholder="0.00"
+              autoFocus={!isEdit}
+              required
+            />
+          </Field>
+
+          <Field id="fromAccountId" label="From" errors={errors.fromAccountId} required>
+            <SelectInput
+              id="fromAccountId"
+              name="fromAccountId"
+              value={fromAccountId}
+              onChange={(event) => handleFromChange(event.target.value)}
+              required
+            >
+              {accountOptions.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </SelectInput>
+          </Field>
+
+          <Field
             id="toAccountId"
-            name="toAccountId"
-            value={toAccountId}
-            onChange={(event) => setToAccountId(event.target.value)}
+            label="To"
+            hint="Paying a credit card is a card payment, not a transfer."
+            errors={errors.toAccountId}
             required
           >
-            {availableDestinations.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
-          </SelectInput>
-        </Field>
+            <SelectInput
+              id="toAccountId"
+              name="toAccountId"
+              value={toAccountId}
+              onChange={(event) => setToAccountId(event.target.value)}
+              required
+            >
+              {availableDestinations.map((option) => (
+                <option key={option.id} value={option.id}>
+                  {option.name}
+                </option>
+              ))}
+            </SelectInput>
+          </Field>
 
-        <Field id="date" label="Date" errors={errors.date} required>
-          <TextInput
-            id="date"
-            name="date"
-            type="date"
-            defaultValue={transfer?.dateInputValue ?? todayValue}
-            required
-          />
-        </Field>
+          <Field id="date" label="Date" errors={errors.date} required>
+            <TextInput
+              id="date"
+              name="date"
+              type="date"
+              defaultValue={transfer?.dateInputValue ?? todayValue}
+              required
+            />
+          </Field>
 
-        <Field
-          id="description"
-          label="Description (optional)"
-          errors={errors.description}
-          hint="Defaults to “Transfer”."
-        >
-          <TextInput
+          <Field
             id="description"
-            name="description"
-            defaultValue={transfer?.description ?? ""}
-            placeholder="Transfer"
-            maxLength={LIMITS.descriptionMaxLength}
-            autoComplete="off"
+            label="Description (optional)"
+            errors={errors.description}
+            hint="Defaults to “Transfer”."
+          >
+            <TextInput
+              id="description"
+              name="description"
+              defaultValue={transfer?.description ?? ""}
+              placeholder="Transfer"
+              maxLength={LIMITS.descriptionMaxLength}
+              autoComplete="off"
+            />
+          </Field>
+
+          <Field id="notes" label="Notes (optional)" errors={errors.notes}>
+            <TextAreaInput
+              id="notes"
+              name="notes"
+              defaultValue={transfer?.notes ?? ""}
+              maxLength={LIMITS.notesMaxLength}
+            />
+          </Field>
+
+          {/* The "not spending" sentence now lives in the rail's tint panel, where it is read once
+              rather than found at the bottom of the form. */}
+          <FormActions
+            submitLabel={isEdit ? "Save changes" : "Record transfer"}
+            pending={pending}
+            onCancel={() => router.push(cancelHref)}
           />
-        </Field>
-
-        <Field id="notes" label="Notes (optional)" errors={errors.notes}>
-          <TextAreaInput
-            id="notes"
-            name="notes"
-            defaultValue={transfer?.notes ?? ""}
-            maxLength={LIMITS.notesMaxLength}
-          />
-        </Field>
-
-        <Text fontSize="xs" color="content.muted">
-          A transfer is not spending, so it will not appear in your monthly total. It moves both
-          account balances.
-        </Text>
-
-        <HStack gap="3">
-          <Button type="submit" size="lg" loading={pending} fullWidth>
-            {isEdit ? "Save changes" : "Record transfer"}
-          </Button>
-          <Button type="button" tone="secondary" size="lg" onClick={() => router.back()}>
-            Cancel
-          </Button>
-        </HStack>
-      </form>
-    </Stack>
+        </form>
+      </Stack>
+    </FormLayout>
   );
 }

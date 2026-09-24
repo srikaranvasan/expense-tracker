@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { Box, Flex, HStack, Stack, Text } from "@chakra-ui/react";
 import { Alert } from "@/components/feedback/Alert";
+import { Icon } from "@/components/icons/Icon";
 import { Button } from "@/components/ui/Button";
 import { AmountInput, Field, SelectInput } from "@/components/ui/Field";
 import type { PersonOption } from "@/features/people/view-models/person-view-model";
@@ -59,10 +60,18 @@ export function SplitEditor({
   const hasAmount = amount.trim() !== "";
 
   return (
-    <Stack gap="4" borderWidth="1px" borderColor="line" rounded="card" p="4">
-      <Text fontSize="sm" fontWeight="semibold">
-        Split
-      </Text>
+    // An inset block on `surface.sunken` (7.3): a fieldset inside a card, which is what this is. The
+    // container border is the soft card outline, not the full ink of a control.
+    <Stack
+      gap="18px"
+      bg="surface.sunken"
+      borderWidth="thin"
+      borderStyle="solid"
+      borderColor="line.card"
+      paddingInline={{ base: "16px", md: "20px" }}
+      paddingBlock={{ base: "16px", md: "20px" }}
+    >
+      <Text textStyle="eyebrow">Split</Text>
 
       <Field id="splitMethod" label="How to split">
         <SelectInput
@@ -151,7 +160,13 @@ export function SplitEditor({
         </Box>
       ))}
 
-      <SplitSummary currency={currency} hasAmount={hasAmount} method={method} computed={computed} />
+      <SplitSummary
+        currency={currency}
+        amount={amount}
+        hasAmount={hasAmount}
+        method={method}
+        computed={computed}
+      />
     </Stack>
   );
 }
@@ -225,20 +240,47 @@ function ParticipantRow({
   );
 }
 
+/**
+ * Formats a partially typed amount without throwing.
+ *
+ * The amount field is a live value: while someone types "48" on the way to "4800" it passes through
+ * states `money()` rejects. Returning `null` lets the caller omit the comparison for a frame rather
+ * than crash the form.
+ */
+function safeFormat(value: string, currency: string): string | null {
+  try {
+    return formatMoney(money(value, currency));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * The running allocated total, against the expense amount.
+ *
+ * **Against**, not alone. A custom or percentage split that does not add up is rejected outright — the
+ * server will not quietly absorb the difference (docs/06-CODING-PRACTICES.md section 55) — so the
+ * useful figure is the gap, and a bare "Allocated ₹3,200.00" leaves the reader to subtract. The
+ * footer reads `₹3,200.00 of ₹4,800.00` and says what is left.
+ *
+ * Separated from the rows above by a rule, because it is a total rather than another row.
+ */
 function SplitSummary({
   currency,
+  amount,
   hasAmount,
   method,
   computed,
 }: {
   currency: string;
+  amount: string;
   hasAmount: boolean;
   method: SplitDraft["method"];
   computed: SplitDraft["computed"];
 }) {
   if (!hasAmount) {
     return (
-      <Text fontSize="xs" color="content.muted">
+      <Text fontSize="meta" color="content.subtle">
         Enter the expense amount to see each share.
       </Text>
     );
@@ -249,22 +291,73 @@ function SplitSummary({
   }
 
   if (method === "percentage") {
+    // 100 is the target. Compared as a number only to choose a colour; the server does the decimal
+    // arithmetic that decides whether the split is accepted.
+    const complete = Number(computed.totalPercentage) === 100;
+
     return (
-      <Flex justify="space-between" fontSize="sm">
-        <Text color="content.muted">Total</Text>
-        <Text textStyle="amount" fontWeight="semibold">
-          {computed.totalPercentage}%
-        </Text>
-      </Flex>
+      <SummaryRow
+        label="Allocated"
+        value={`${computed.totalPercentage}% of 100%`}
+        complete={complete}
+        note={complete ? null : "The percentages have to add up to 100."}
+      />
     );
   }
 
+  const total = safeFormat(amount, currency);
+  const allocated = formatMoney(money(computed.allocated, currency));
+  const complete = total !== null && Number(computed.allocated) === Number(amount);
+
   return (
-    <Flex justify="space-between" fontSize="sm">
-      <Text color="content.muted">Allocated</Text>
-      <Text textStyle="amount" fontWeight="semibold">
-        {formatMoney(money(computed.allocated, currency))}
-      </Text>
-    </Flex>
+    <SummaryRow
+      label="Allocated"
+      value={total ? `${allocated} of ${total}` : allocated}
+      complete={complete}
+      note={complete ? null : "Each share has to add up to the total."}
+    />
+  );
+}
+
+function SummaryRow({
+  label,
+  value,
+  complete,
+  note,
+}: {
+  label: string;
+  value: string;
+  complete: boolean;
+  note: string | null;
+}) {
+  return (
+    <Box borderTopWidth="hairline" borderColor="line.soft" pt="14px">
+      <Flex justify="space-between" align="center" gap="3">
+        <HStack gap="6px">
+          <Text textStyle="eyebrow">{label}</Text>
+          {/*
+            The tick is confirmation, not the message: `complete` also drives the figure's colour, and
+            the note below states the rule in words when it is not met. Decorative, so it is not
+            announced twice.
+          */}
+          {complete ? <Icon name="check" size="inline" color="positive" aria-hidden /> : null}
+        </HStack>
+
+        <Text
+          textStyle="amount"
+          fontSize="row"
+          fontWeight="600"
+          color={complete ? "positive" : "content"}
+        >
+          {value}
+        </Text>
+      </Flex>
+
+      {note ? (
+        <Text fontSize="meta" color="content.subtle" mt="6px">
+          {note}
+        </Text>
+      ) : null}
+    </Box>
   );
 }

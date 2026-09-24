@@ -2,7 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Box, HStack, SimpleGrid, Stack } from "@chakra-ui/react";
+import { Box, Flex, SimpleGrid, Stack } from "@chakra-ui/react";
+import { DiamondMark } from "@/components/layout/DiamondMark";
 import { Button } from "@/components/ui/Button";
 import { Field, SelectInput, TextInput } from "@/components/ui/Field";
 import type { AccountOption } from "@/features/accounts/view-models/account-view-model";
@@ -14,6 +15,69 @@ export type TransactionFiltersProps = {
   categoryOptions: readonly CategoryOption[];
   personOptions: readonly PersonOption[];
 };
+
+/**
+ * The filter toggle, which says whether anything is filtered **without being opened**.
+ *
+ * This is the requirement in its own right: a collapsed panel that hides the fact that three filters
+ * are narrowing the list is how a user comes to believe they have lost transactions. So the closed
+ * state carries the count.
+ *
+ * When something is active it becomes the dashed teal chip from `Activity-Light.html` with the 8px
+ * diamond marker — the audit motif reserved for exactly this (5.4). Dashed is used in only two places
+ * in the whole design, here and on `Stamp`, which is what makes it register as "provisional".
+ *
+ * When nothing is active it is an ordinary secondary button. A dashed teal chip reading "Filters · 0
+ * active" would be an alarm about nothing.
+ */
+function FilterToggle({
+  expanded,
+  activeCount,
+  onToggle,
+}: {
+  expanded: boolean;
+  activeCount: number;
+  onToggle: () => void;
+}) {
+  const label = expanded
+    ? "Hide filters"
+    : activeCount > 0
+      ? `Filters · ${activeCount} active`
+      : "Filters";
+
+  if (activeCount === 0) {
+    return (
+      <Button type="button" tone="secondary" size="lg" onClick={onToggle} aria-expanded={expanded}>
+        {label}
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      type="button"
+      tone="secondary"
+      size="lg"
+      onClick={onToggle}
+      aria-expanded={expanded}
+      // Dashed teal, over the secondary tone's solid ink border.
+      borderStyle="dashed"
+      borderWidth="thin"
+      borderColor="brand.fg"
+      color="brand.fg"
+      gap="8px"
+      _hover={{ bg: "brand.muted" }}
+    >
+      {/*
+        Solid `brand.fg`, not the mark's usual teal fill with an ink border: at 8px inside a teal chip
+        the two-tone version reads as a smudge, and the marker should be the same ink as the label it
+        sits beside.
+      */}
+      <DiamondMark size="sm" bg="brand.fg" borderColor="brand.fg" />
+      {label}
+    </Button>
+  );
+}
 
 /**
  * Filter and search controls for the transaction list.
@@ -58,16 +122,26 @@ export function TransactionFilters({
   ].filter((key) => searchParams.get(key)).length;
 
   return (
-    <Stack gap="3" mb="4">
-      <form
-        onSubmit={(event) => {
-          event.preventDefault();
-          const value = new FormData(event.currentTarget).get("search");
-          apply({ search: value ? String(value).trim() : "" });
-        }}
+    <Stack gap="3" mb="24px" mt="28px">
+      {/*
+        Search, its commit, and the filter toggle in one row — as `Activity-Light.html` draws it. The
+        row wraps below `md`, where three controls side by side would each be about 110px wide.
+      */}
+      <Flex
+        asChild
+        gap={{ base: "12px", md: "16px" }}
+        align={{ base: "stretch", md: "flex-end" }}
+        direction={{ base: "column", md: "row" }}
+        wrap="wrap"
       >
-        <HStack gap="2" align="flex-end">
-          <Box flex="1">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            const value = new FormData(event.currentTarget).get("search");
+            apply({ search: value ? String(value).trim() : "" });
+          }}
+        >
+          <Box flex="1" minW="0">
             <Field id="search" label="Search">
               <TextInput
                 id="search"
@@ -79,18 +153,26 @@ export function TransactionFilters({
               />
             </Field>
           </Box>
-          <Button type="submit">Search</Button>
-        </HStack>
-      </form>
 
-      <Box>
-        <Button tone="ghost" size="sm" onClick={() => setExpanded((value) => !value)}>
-          {expanded ? "Hide filters" : `Filters${activeCount > 0 ? ` (${activeCount})` : ""}`}
-        </Button>
-      </Box>
+          {/*
+            Ink fill, not teal. The page's primary action is "Add expense" in the header; a second
+            teal button in the row below it would give one screen two primaries. `contrast` is the
+            design's fill for a control that commits without claiming that rank (7.1, group 35).
+          */}
+          <Button type="submit" tone="contrast" size="lg">
+            Search
+          </Button>
+
+          <FilterToggle
+            expanded={expanded}
+            activeCount={activeCount}
+            onToggle={() => setExpanded((value) => !value)}
+          />
+        </form>
+      </Flex>
 
       {expanded ? (
-        <Stack gap="4" borderWidth="1px" borderColor="line" bg="surface" rounded="card" p="4">
+        <Stack gap="4" borderWidth="thin" borderColor="line.card" bg="surface" p="4">
           <SimpleGrid columns={{ base: 1, sm: 2 }} gap="4">
             <Field id="filter-type" label="Type">
               <SelectInput

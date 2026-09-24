@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Box } from "@chakra-ui/react";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Card, CardBody } from "@/components/ui/Card";
+import { personParent } from "@/components/layout/Parents";
 import { getAccountOptions } from "@/features/accounts/queries/account-queries";
 import { SettleUpForm } from "@/features/settlements/components/SettleUpForm";
 import { getSettleUpView } from "@/features/settlements/queries/settlement-queries";
@@ -28,21 +28,28 @@ export default async function SettleUpPage({ params }: { params: Promise<{ id: s
   const accountOptions = await getAccountOptions(user.id);
 
   return (
-    <Box as="section">
+    /*
+      A centred 820px column, as `SettleUp-Light.html` draws it — narrower than the other form pages
+      and with no side rail. The reason is the allocation box: it is the subject of this screen, and a
+      rail beside it would compete with the one thing the user has come here to get right.
+     */
+    <Box as="section" maxW="820px" mx="auto">
+      {/*
+        The person, not `/settlements`. Settling up is an action on a person, and the balance the user
+        was reading is on that page.
+      */}
       <PageHeader
         title="Settle up"
         description={`Record a payment between you and ${view.personName}.`}
+        parent={personParent(id, view.personName)}
       />
 
-      <Card>
-        <CardBody>
-          <SettleUpForm
-            view={view}
-            accountOptions={accountOptions}
-            todayValue={toDateInputValue(new Date(), user.timezone)}
-          />
-        </CardBody>
-      </Card>
+      {/* No card here: `SettleUpForm` renders its own `FormLayout`. */}
+      <SettleUpForm
+        view={view}
+        accountOptions={accountOptions}
+        todayValue={toDateInputValue(new Date(), user.timezone)}
+      />
     </Box>
   );
 }

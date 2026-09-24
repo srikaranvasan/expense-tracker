@@ -121,6 +121,7 @@ type SwInternals = {
   extractStaticAssetUrls: (html: string) => string[];
   precacheShell: () => Promise<unknown>;
   precacheOfflineAssets: () => Promise<unknown>;
+  precacheNestedStylesheetAssets: (urls: string[]) => Promise<unknown>;
   deleteObsoleteCaches: () => Promise<unknown>;
   clearPrivateCaches: () => Promise<unknown>;
 };
@@ -638,6 +639,73 @@ describe("service worker routing", () => {
       const keys = await staticCache.keys();
       expect(keys).toContain(`${ORIGIN}/_next/static/css/app.css`);
       expect(keys).toContain(`${ORIGIN}/_next/static/chunks/main-abc.js`);
+    });
+
+    it("caches the self-hosted font files referenced from inside the stylesheet", async () => {
+      /*
+       * The shape below is what a real build produces, and it is not the obvious shape.
+       * `next/font` puts no /_next/static/media/ reference in the document at all — only a
+       * stylesheet link — and the @font-face rules with the font URLs live inside that
+       * stylesheet. Extracting from the HTML alone therefore stops one level short, and the
+       * browser's request for each face fails offline.
+       *
+       * Checked against .next/server/app/offline.html and its stylesheet from
+       * `npm run build`; see docs/design-tasks/updates/GROUP-22-TYPOGRAPHY.md.
+       */
+      const offlineHtml =
+        "<!doctype html><html><head>" +
+        '<link rel="stylesheet" href="/_next/static/css/app.css"/>' +
+        '<script src="/_next/static/chunks/main-abc.js"></script>' +
+        "</head><body></body></html>";
+
+      const stylesheet =
+        "@font-face{font-family:Space Grotesk;font-weight:600;" +
+        "src:url(/_next/static/media/space-grotesk-600.p.woff2) format('woff2')}" +
+        "@font-face{font-family:Manrope;font-weight:400;" +
+        "src:url(/_next/static/media/manrope-400.p.woff2) format('woff2')}" +
+        "@font-face{font-family:IBM Plex Mono;font-weight:500;" +
+        "src:url(/_next/static/media/ibm-plex-mono-500.p.woff2) format('woff2')}";
+
+      sw.setFetch(async (request) => {
+        if (request.url.endsWith("/offline")) {
+          return new Response(offlineHtml, { headers: { "content-type": "text/html" } });
+        }
+        if (request.url.endsWith("/app.css")) {
+          return new Response(stylesheet, { headers: { "content-type": "text/css" } });
+        }
+        return new Response("asset", { status: 200 });
+      });
+
+      await sw.install();
+
+      const keys = await (await sw.caches.open(sw.internals.CACHE_NAMES.static)).keys();
+      expect(keys).toContain(`${ORIGIN}/_next/static/media/space-grotesk-600.p.woff2`);
+      expect(keys).toContain(`${ORIGIN}/_next/static/media/manrope-400.p.woff2`);
+      expect(keys).toContain(`${ORIGIN}/_next/static/media/ibm-plex-mono-500.p.woff2`);
+    });
+
+    it("serves a cached font file without going to the network", async () => {
+      // Font files live under /_next/static/, so they are immutable and cache-first. If
+      // this ever became network-only the precache above would be dead weight.
+      expect(
+        sw.internals.decideStrategy(
+          new Request(new URL("/_next/static/media/manrope-400.p.woff2", ORIGIN)),
+          ORIGIN,
+        ),
+      ).toBe("cache-first");
+    });
+
+    it("survives a stylesheet it cannot read", async () => {
+      // A font that fails to precache costs the right typeface offline, not the app.
+      sw.setFetch(async (request) =>
+        request.url.endsWith("/offline")
+          ? new Response('<link rel="stylesheet" href="/_next/static/css/app.css"/>', {
+              headers: { "content-type": "text/html" },
+            })
+          : new Response("", { status: 404 }),
+      );
+
+      await expect(sw.install()).resolves.toBeUndefined();
     });
 
     it("extracts asset paths from markup and inline payloads without duplicates", () => {

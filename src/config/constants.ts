@@ -94,15 +94,35 @@ export const SYNC = {
 
 // --- Default categories created at registration -----------------------------
 
+/**
+ * The categories a new account starts with.
+ *
+ * ## These are registry names now, not lucide names
+ *
+ * They used to be `utensils`, `shopping-bag`, `film`, `heart-pulse` and `house` — lucide names from
+ * before this project had an icon set. Nothing was broken: group 25 built `STORED_NAME_ALIASES` in
+ * `features/categories/icon-map.ts` precisely so existing databases full of those strings keep
+ * resolving, and they do.
+ *
+ * Group 39 changed the constant anyway, because an alias table should be a **migration concern for old
+ * data**, not the mechanism by which rows the app creates today render correctly. New accounts now
+ * store the name the registry actually uses.
+ *
+ * **The aliases must stay.** Every account created before this change has the old strings in it.
+ *
+ * `src/features/categories/icon-map.test.ts` asserts every entry here is a real registry name, so the
+ * next addition fails a test rather than quietly falling back to `ellipsis`.
+ */
 export const DEFAULT_CATEGORIES: ReadonlyArray<{ name: string; icon: string }> = [
-  { name: "Food", icon: "utensils" },
+  { name: "Food", icon: "cutlery" },
   { name: "Transport", icon: "car" },
-  { name: "Shopping", icon: "shopping-bag" },
+  { name: "Shopping", icon: "bag" },
   { name: "Bills", icon: "receipt" },
-  { name: "Entertainment", icon: "film" },
-  { name: "Health", icon: "heart-pulse" },
+  { name: "Entertainment", icon: "ticket" },
+  // `activity` is the pulse line — the closest the registry has to a health glyph, and a good fit.
+  { name: "Health", icon: "activity" },
   { name: "Travel", icon: "plane" },
-  { name: "Rent", icon: "house" },
+  { name: "Rent", icon: "home" },
   { name: "Other", icon: "ellipsis" },
 ];
 

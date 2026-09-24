@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import { Box, Flex, Stack, Text } from "@chakra-ui/react";
+import { Box, Flex, HStack, Stack, Text } from "@chakra-ui/react";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { AppLink, RowLink } from "@/components/ui/AppLink";
 import { Button } from "@/components/ui/Button";
 import { Card, CardList } from "@/components/ui/Card";
+import { ReferenceCode } from "@/components/ui/ReferenceCode";
 import { PAGINATION } from "@/config/constants";
 import { getSettlementListView } from "@/features/settlements/queries/settlement-queries";
 import { listSettlementsQuerySchema } from "@/features/settlements/schemas/settlement-schemas";
@@ -63,9 +64,13 @@ export default async function SettlementsPage({
                   </Text>
                 </Box>
 
-                <Text textStyle="amount" fontSize="sm" fontWeight="semibold" flexShrink="0">
-                  {settlement.formattedAmount}
-                </Text>
+                {/* Same right-hand cluster as an activity row, so the two lists read alike. */}
+                <HStack gap="14px" flexShrink="0" align="center">
+                  <ReferenceCode code={settlement.referenceCode} />
+                  <Text textStyle="amount" fontSize="sm" fontWeight="semibold">
+                    {settlement.formattedAmount}
+                  </Text>
+                </HStack>
               </RowLink>
             ))}
           </CardList>
@@ -83,9 +88,19 @@ export default async function SettlementsPage({
       ) : null}
 
       <Flex mt="5">
-        <Text fontSize="sm">
-          <AppLink href="/people">Settle up with someone</AppLink>
-        </Text>
+        {/*
+          A standalone action, not a link inside a sentence, so WCAG's inline exception does not
+          cover it and it carries its own target height. Group 40 measured it at 21px.
+        */}
+        <AppLink
+          href="/people"
+          fontSize="sm"
+          display="inline-flex"
+          alignItems="center"
+          minH="touch"
+        >
+          Settle up with someone
+        </AppLink>
       </Flex>
     </Box>
   );

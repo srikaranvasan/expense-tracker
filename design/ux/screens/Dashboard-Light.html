@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dashboard — light</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  .d-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:#5B5770;}
+  .d-mono{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;color:#1E1B29;}
+  .d-card{background:#FFFFFF;border:1.5px solid rgba(30,27,41,0.18);}
+  .d-row{display:flex; justify-content:space-between; align-items:center; padding:16px 24px; border-top:1px solid rgba(30,27,41,0.10);}
+  .d-row:first-of-type{border-top:none;}
+  .d-link{font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.03em; color:#1D7A6C; text-decoration:none; text-transform:uppercase;}
+  nav a{font-family:'Space Grotesk',sans-serif; font-size:14.5px; color:#5B5770; text-decoration:none; padding:8px 4px;}
+</style>
+</head>
+<body>
+<div style="width:1440px; height:2000px; background:#FAF7F2; font-family:'Manrope',sans-serif; color:#1E1B29;">
+
+  <!-- header -->
+  <div style="height:58px; background:#FFFFFF; border-bottom:2px solid #1E1B29; display:flex; align-items:center; justify-content:space-between; padding:0 32px;">
+    <div style="display:flex; align-items:center; gap:44px;">
+      <div style="display:flex; align-items:center; gap:9px;">
+        <div style="width:16px;height:16px;background:#7FD1C3;border:2px solid #1E1B29;transform:rotate(45deg);"></div>
+        <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px;">Expense Tracker</span>
+      </div>
+      <nav style="display:flex; gap:30px;">
+        <a href="#" style="color:#1E1B29; font-weight:700; border-bottom:3px solid #7FD1C3; padding-bottom:24px; margin-bottom:-24px;"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><path d="M2 7L8 2L14 7" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M4 6.5V13.5H12V6.5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>Home</a>
+        <a href="#"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><path d="M1 8H4L6 3L10 13L12 8H15" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Activity</a>
+        <a href="#"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><rect x="1.5" y="4.5" width="13" height="9" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="9.3" y="7.5" width="3.7" height="3" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>Accounts</a>
+        <a href="#"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><rect x="1" y="5" width="6.5" height="6.5" stroke="currentColor" stroke-width="1.4" fill="none" transform="rotate(45 4.25 8.25)"/><rect x="7.2" y="5" width="6.5" height="6.5" stroke="currentColor" stroke-width="1.4" fill="none" transform="rotate(45 10.45 8.25)"/></svg>People</a>
+        <a href="#"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><rect x="1.5" y="1.5" width="5" height="5" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="9.5" y="1.5" width="5" height="5" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="1.5" y="9.5" width="5" height="5" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="9.5" y="9.5" width="5" height="5" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>Categories</a>
+      </nav>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="display:flex; align-items:center; gap:8px;"><div style="width:24px;height:24px;background:#7FD1C3;border:1.5px solid #1E1B29;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:9.5px;color:#1E1B29;flex-shrink:0;">MI</div><span style="font-size:14px; color:#5B5770;">Meera Iyer</span></div>
+      <div title="Sign out" aria-label="Sign out" style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:2px solid #1E1B29;background:#FFFFFF;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 16 16"><path d="M6 2H3.5C2.7 2 2 2.7 2 3.5V12.5C2 13.3 2.7 14 3.5 14H6" stroke="#1E1B29" stroke-width="1.4" fill="none"/><path d="M6 8H14M14 8L11 5M14 8L11 11" stroke="#1E1B29" stroke-width="1.4" fill="none"/></svg></div>
+    </div>
+  </div>
+
+  <div style="padding:40px 40px 60px;">
+    <div style="display:flex; align-items:baseline; justify-content:space-between;">
+      <div>
+        <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:32px; margin:0;">Dashboard</h1>
+        <p style="margin:6px 0 0; color:#5B5770; font-size:15px;">Everything calculated from your records.</p>
+      </div>
+      <span class="d-eyebrow">AS OF 21 SEP 2026, 06:00</span>
+    </div>
+
+    <!-- quick actions -->
+    <div style="display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:16px; margin-top:28px;">
+      <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; padding:16px; text-align:center; background:#7FD1C3; border:2px solid #1E1B29; box-shadow:4px 4px 0 #1E1B29;"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:7px; vertical-align:-2px;"><line x1="8" y1="2" x2="8" y2="14" stroke="currentColor" stroke-width="2"/><line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="2"/></svg>Add expense</div>
+      <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; padding:16px; text-align:center; background:#FFFFFF; border:2px solid #1E1B29;"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:7px; vertical-align:-2px;"><path d="M2 5H14M14 5L11 2M14 5L11 8" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M14 11H2M2 11L5 8M2 11L5 14" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Split a bill</div>
+      <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; padding:16px; text-align:center; background:#FFFFFF; border:2px solid #1E1B29;"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:7px; vertical-align:-2px;"><path d="M2 8H14M9 3L14 8L9 13" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Transfer</div>
+      <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; padding:16px; text-align:center; background:#FFFFFF; border:2px solid #1E1B29;"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:7px; vertical-align:-2px;"><rect x="2" y="3" width="12" height="10" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="2" y1="6.5" x2="14" y2="6.5" stroke="currentColor" stroke-width="1.5"/></svg>Pay card</div>
+    </div>
+
+    <!-- tiles -->
+    <div style="display:grid; grid-template-columns:repeat(4, minmax(0, 1fr)); gap:16px; margin-top:24px;">
+      <div class="d-card" style="border-top:4px solid #7FD1C3; padding:18px 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;"><div class="d-eyebrow">Cash &amp; bank</div><svg width="15" height="15" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="13" height="9" stroke="#5B5770" stroke-width="1.3" fill="none"/><rect x="9.3" y="7.5" width="3.7" height="3" stroke="#5B5770" stroke-width="1.1" fill="none"/></svg></div>
+        <div class="d-mono" style="font-size:24px; font-weight:600; margin-top:8px;">₹69,509.50</div>
+        <div style="font-size:12.5px; color:#8B87A0; margin-top:4px;">Across all accounts</div>
+      </div>
+      <div class="d-card" style="border-top:4px solid #FCE49B; padding:18px 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;"><div class="d-eyebrow">Spent in Sept 2026</div><svg width="15" height="15" viewBox="0 0 16 16"><rect x="2" y="8" width="3" height="6" stroke="#5B5770" stroke-width="1.3" fill="none"/><rect x="6.5" y="4" width="3" height="10" stroke="#5B5770" stroke-width="1.3" fill="none"/><rect x="11" y="6" width="3" height="8" stroke="#5B5770" stroke-width="1.3" fill="none"/></svg></div>
+        <div class="d-mono" style="font-size:24px; font-weight:600; margin-top:8px;">₹18,937.50</div>
+        <div style="font-size:12.5px; color:#8B87A0; margin-top:4px;">Your own share</div>
+      </div>
+      <div class="d-card" style="border-top:4px solid #FFC7B8; padding:18px 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;"><div class="d-eyebrow">Card debt</div><svg width="15" height="15" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" stroke="#5B5770" stroke-width="1.3" fill="none"/><line x1="2" y1="6.5" x2="14" y2="6.5" stroke="#5B5770" stroke-width="1.3"/></svg></div>
+        <div class="d-mono" style="font-size:24px; font-weight:600; margin-top:8px;">₹20,097.00</div>
+        <div style="font-size:12.5px; color:#8B87A0; margin-top:4px;">Total outstanding</div>
+      </div>
+      <div class="d-card" style="border-top:4px solid #BFEBD2; padding:18px 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;"><div class="d-eyebrow">Available credit</div><svg width="15" height="15" viewBox="0 0 16 16"><path d="M8 1.5L14 4V8C14 11.5 11.5 13.8 8 14.5C4.5 13.8 2 11.5 2 8V4L8 1.5Z" stroke="#5B5770" stroke-width="1.3" fill="none"/></svg></div>
+        <div class="d-mono" style="font-size:24px; font-weight:600; margin-top:8px;">₹1,79,903.00</div>
+        <div style="font-size:12.5px; color:#8B87A0; margin-top:4px;">Still usable</div>
+      </div>
+    </div>
+
+    <!-- net position -->
+    <div style="margin-top:24px; background:#DCF3EE; border:1.5px solid #1E1B29; padding:22px 26px; display:flex; justify-content:space-between; align-items:center;">
+      <div>
+        <div class="d-eyebrow">Net position &mdash; cash and bank minus what you owe on cards</div>
+        <div class="d-mono" style="font-size:28px; font-weight:600; margin-top:8px;">₹49,412.50</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 16 16"><line x1="2" y1="6" x2="14" y2="6" stroke="#1D7A6C" stroke-width="2"/><line x1="2" y1="10" x2="14" y2="10" stroke="#1D7A6C" stroke-width="2"/></svg>
+        <span class="d-eyebrow" style="color:#1D7A6C;">computed</span>
+      </div>
+    </div>
+
+    <!-- spending -->
+    <div class="d-card" style="margin-top:32px;">
+      <div style="display:flex; justify-content:space-between; padding:20px 24px;">
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:17px;">Spending in September 2026</div>
+          <div style="font-size:13px; color:#8B87A0; margin-top:4px;">Your own share. Transfers and card payments are not included.</div>
+        </div>
+        <span class="d-link">View all</span>
+      </div>
+      <div style="padding:0 24px 20px;">
+        <div class="d-mono" style="font-size:26px; font-weight:600;">₹18,937.50</div>
+        <div style="font-size:12.5px; color:#8B87A0; margin-top:2px;">No spending recorded last month to compare with</div>
+      </div>
+      <div class="d-row" style="border-top:1px solid rgba(30,27,41,0.10);">
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:20px;height:20px;background:#C0DBF7;border:1.5px solid #1E1B29;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 16 16"><path d="M4 6H12L11.3 14H4.7L4 6Z" stroke="#1E1B29" stroke-width="1.3" fill="none"/><path d="M6 6V4C6 2.9 6.9 2 8 2C9.1 2 10 2.9 10 4V6" stroke="#1E1B29" stroke-width="1.3" fill="none"/></svg></div><div><div style="font-weight:600; font-size:14.5px;">Shopping</div><div style="font-size:12px; color:#8B87A0;">1 expense</div></div></div>
+        <span class="d-mono" style="font-size:14.5px; font-weight:600;">₹5,499.00</span>
+      </div>
+      <div class="d-row">
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:20px;height:20px;background:#FCE49B;border:1.5px solid #1E1B29;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 16 16"><path d="M9 1L3 9H7L6 15L13 6H9L9 1Z" stroke="#1E1B29" stroke-width="1.2" fill="none" stroke-linejoin="round"/></svg></div><div><div style="font-weight:600; font-size:14.5px;">Electricity</div><div style="font-size:12px; color:#8B87A0;">1 expense</div></div></div>
+        <span class="d-mono" style="font-size:14.5px; font-weight:600;">₹3,150.00</span>
+      </div>
+      <div class="d-row">
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:20px;height:20px;background:#7FD1C3;border:1.5px solid #1E1B29;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 16 16"><rect x="1.5" y="3" width="13" height="10" stroke="#1E1B29" stroke-width="1.2" fill="none"/><line x1="1.5" y1="6" x2="14.5" y2="6" stroke="#1E1B29" stroke-width="1"/><line x1="1.5" y1="10" x2="14.5" y2="10" stroke="#1E1B29" stroke-width="1"/></svg></div><div><div style="font-weight:600; font-size:14.5px;">Entertainment</div><div style="font-size:12px; color:#8B87A0;">2 expenses</div></div></div>
+        <span class="d-mono" style="font-size:14.5px; font-weight:600;">₹3,099.00</span>
+      </div>
+      <div class="d-row">
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:20px;height:20px;background:#BFEBD2;border:1.5px solid #1E1B29;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 16 16"><path d="M1.5 2H3L4.5 10.5H12.5L14 4.5H4" stroke="#1E1B29" stroke-width="1.2" fill="none"/><circle cx="6" cy="13.5" r="1" fill="#1E1B29"/><circle cx="11.5" cy="13.5" r="1" fill="#1E1B29"/></svg></div><div><div style="font-weight:600; font-size:14.5px;">Groceries</div><div style="font-size:12px; color:#8B87A0;">1 expense</div></div></div>
+        <span class="d-mono" style="font-size:14.5px; font-weight:600;">₹2,480.50</span>
+      </div>
+    </div>
+
+    <!-- accounts -->
+    <div class="d-card" style="margin-top:24px;">
+      <div style="display:flex; justify-content:space-between; padding:20px 24px;">
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:17px;">Accounts</div>
+          <div style="font-size:13px; color:#8B87A0; margin-top:4px;">Calculated from your transactions</div>
+        </div>
+        <span class="d-link">Manage</span>
+      </div>
+      <div class="d-row" style="border-top:1px solid rgba(30,27,41,0.10);">
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:32px;height:32px;background:#7FD1C3;border:1.5px solid #1E1B29; display:flex; align-items:center; justify-content:center;"><svg width="15" height="15" viewBox="0 0 16 16"><path d="M2 6L8 2L14 6" stroke="#1E1B29" stroke-width="1.6" fill="none"/><rect x="3" y="7" width="10" height="6" stroke="#1E1B29" stroke-width="1.6" fill="none"/></svg></div><div><div style="font-weight:600; font-size:14.5px;">HDFC Savings</div><div style="font-size:12px; color:#8B87A0;">Bank</div></div></div>
+        <div style="text-align:right;"><span class="d-mono" style="font-size:14.5px; font-weight:600;">₹55,869.50</span><div style="font-size:11.5px; color:#8B87A0;">balance</div></div>
+      </div>
+      <div class="d-row">
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:32px;height:32px;background:#BFEBD2;border:1.5px solid #1E1B29; display:flex; align-items:center; justify-content:center;"><svg width="15" height="15" viewBox="0 0 16 16"><rect x="2" y="4" width="12" height="8" stroke="#1E1B29" stroke-width="1.6" fill="none"/><line x1="2" y1="7" x2="14" y2="7" stroke="#1E1B29" stroke-width="1.6"/></svg></div><div><div style="font-weight:600; font-size:14.5px;">Cash wallet</div><div style="font-size:12px; color:#8B87A0;">Cash</div></div></div>
+        <div style="text-align:right;"><span class="d-mono" style="font-size:14.5px; font-weight:600;">₹13,640.00</span><div style="font-size:11.5px; color:#8B87A0;">balance</div></div>
+      </div>
+      <div class="d-row">
+        <div style="display:flex; align-items:center; gap:12px;"><div style="width:32px;height:32px;background:#FFC7B8;border:1.5px solid #1E1B29; display:flex; align-items:center; justify-content:center;"><svg width="15" height="15" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" stroke="#1E1B29" stroke-width="1.6" fill="none"/><line x1="2" y1="6.5" x2="14" y2="6.5" stroke="#1E1B29" stroke-width="1.6"/></svg></div><div><div style="font-weight:600; font-size:14.5px;">ICICI Platinum</div><div style="font-size:12px; color:#8B87A0;">Credit card &middot; ₹1,79,903.00 available</div></div></div>
+        <div style="text-align:right;"><span class="d-mono" style="font-size:14.5px; font-weight:600; color:#D1523F;">₹20,097.00</span><div style="font-size:11.5px; color:#8B87A0;">owed</div></div>
+      </div>
+    </div>
+
+    <!-- owes / you owe -->
+    <div style="display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:16px; margin-top:24px;">
+      <div class="d-card">
+        <div style="display:flex; justify-content:space-between; padding:18px 22px;">
+          <div><div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15.5px;">Owes you</div><div style="font-size:12.5px; color:#8B87A0; margin-top:2px;">People with an outstanding balance</div></div>
+          <span class="d-link">See all</span>
+        </div>
+        <div class="d-row" style="border-top:1px solid rgba(30,27,41,0.10);">
+          <div style="display:flex; align-items:center; gap:12px;"><div style="width:32px;height:32px;background:#BFEBD2;border:1.5px solid #1E1B29; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:12px;">RS</div><div><div style="font-weight:600; font-size:14.5px;">Ravi Shankar</div><div style="font-size:12px; color:#8B87A0;">1 expense outstanding</div></div></div>
+          <div style="text-align:right;"><span class="d-mono" style="font-size:14.5px; font-weight:600; color:#2E8A61;"><svg width="12" height="12" viewBox="0 0 16 16" style="margin-right:4px; vertical-align:-1px;"><path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" stroke-width="1.7" fill="none"/></svg>₹1,600.00</span><div style="font-size:11.5px; color:#8B87A0;">owes you</div></div>
+        </div>
+      </div>
+      <div class="d-card">
+        <div style="display:flex; justify-content:space-between; padding:18px 22px;">
+          <div><div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15.5px;">You owe</div><div style="font-size:12.5px; color:#8B87A0; margin-top:2px;">People you still need to pay</div></div>
+          <span class="d-link">See all</span>
+        </div>
+        <div class="d-row" style="border-top:1px solid rgba(30,27,41,0.10);">
+          <div style="display:flex; align-items:center; gap:12px;"><div style="width:32px;height:32px;background:#FFC7B8;border:1.5px solid #1E1B29; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:12px;">PN</div><div><div style="font-weight:600; font-size:14.5px;">Priya Nair</div><div style="font-size:12px; color:#8B87A0;">1 expense outstanding</div></div></div>
+          <div style="text-align:right;"><span class="d-mono" style="font-size:14.5px; font-weight:600; color:#D1523F;"><svg width="12" height="12" viewBox="0 0 16 16" style="margin-right:4px; vertical-align:-1px;"><path d="M4 4L12 12M12 12H6M12 12V6" stroke="currentColor" stroke-width="1.7" fill="none"/></svg>₹1,800.00</span><div style="font-size:11.5px; color:#8B87A0;">you owe</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- recent activity -->
+    <div class="d-card" style="margin-top:24px;">
+      <div style="display:flex; justify-content:space-between; padding:20px 24px;">
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:17px;">Recent activity</div>
+        <span class="d-link">See all</span>
+      </div>
+      <div class="d-row" style="border-top:1px solid rgba(30,27,41,0.10);">
+        <div><div style="font-weight:600; font-size:14.5px;">Filter coffee</div><div style="font-size:12px; color:#8B87A0;">Today &middot; Cash wallet &middot; Dining out</div></div>
+        <div style="text-align:right;"><span class="d-mono" style="font-size:14.5px; font-weight:600;">₹220.00</span><div class="d-mono" style="font-size:10.5px; color:#B4B0C4;">#08231</div></div>
+      </div>
+      <div class="d-row">
+        <div><div style="font-weight:600; font-size:14.5px;">Part payment</div><div style="font-size:12px; color:#8B87A0;">Yesterday &middot; HDFC Savings &rarr; ICICI Platinum</div></div>
+        <div style="text-align:right;"><span class="d-mono" style="font-size:14.5px; font-weight:600;">₹6,000.00</span><div class="d-mono" style="font-size:10.5px; color:#B4B0C4;">#08229</div></div>
+      </div>
+      <div class="d-row">
+        <div><div style="font-weight:600; font-size:14.5px;">Big Basket groceries</div><div style="font-size:12px; color:#8B87A0;">Yesterday &middot; HDFC Savings &middot; Groceries</div></div>
+        <div style="text-align:right;"><span class="d-mono" style="font-size:14.5px; font-weight:600;">₹2,480.50</span><div class="d-mono" style="font-size:10.5px; color:#B4B0C4;">#08228</div></div>
+      </div>
+      <div class="d-row">
+        <div><div style="font-weight:600; font-size:14.5px;">Cash withdrawal</div><div style="font-size:12px; color:#8B87A0;">Sat, 19 Sept &middot; HDFC Savings &rarr; Cash wallet</div></div>
+        <div style="text-align:right;"><span class="d-mono" style="font-size:14.5px; font-weight:600;">₹10,000.00</span><div class="d-mono" style="font-size:10.5px; color:#B4B0C4;">#08217</div></div>
+      </div>
+      <div class="d-row">
+        <div><div style="font-weight:600; font-size:14.5px;">Team dinner at Toit</div><div style="font-size:12px; color:#8B87A0;">Fri, 18 Sept &middot; HDFC Savings &middot; Dining out</div></div>
+        <div style="text-align:right;"><span class="d-mono" style="font-size:14.5px; font-weight:600;">₹1,600.00</span><div class="d-mono" style="font-size:10.5px; color:#B4B0C4;">#08201</div></div>
+      </div>
+    </div>
+
+    <!-- settlements -->
+    <div class="d-card" style="margin-top:24px;">
+      <div style="display:flex; justify-content:space-between; padding:20px 24px;">
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:17px;">Recent settlements</div>
+        <span class="d-link">See all</span>
+      </div>
+      <div class="d-row" style="border-top:1px solid rgba(30,27,41,0.10);">
+        <div><div style="font-weight:600; font-size:14.5px;">Arun Kumar paid you</div><div style="font-size:12px; color:#8B87A0;">21 Sept 2026</div></div>
+        <span class="d-mono" style="font-size:14.5px; font-weight:600; color:#2E8A61;">₹2,950.00</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useTransition } from "react";
-import { Button } from "@/components/ui/Button";
+import { Icon } from "@/components/icons/Icon";
+import { IconButton } from "@/components/ui/Button";
 import { clearPrivateCaches } from "@/offline/pwa/service-worker";
 import { logoutAction } from "../actions/auth-actions";
 
@@ -45,9 +46,23 @@ export function SignOutButton() {
     });
   };
 
+  /*
+   * Icon-only, at both widths.
+   *
+   * A wide text button in the mobile header is the direct cause of the crushed-title bug this
+   * restyle has to fix (docs/design-tasks/01-DESIGN-SYSTEM.md section 9.2): at 402px it squeezed
+   * the page title to one word per line. `IconButton` requires an `aria-label`, so the control
+   * cannot lose its accessible name on the way.
+   */
   return (
-    <Button tone="secondary" size="sm" loading={pending} onClick={handleSignOut}>
-      Sign out
-    </Button>
+    <IconButton
+      tone="secondary"
+      loading={pending}
+      onClick={handleSignOut}
+      aria-label="Sign out"
+      title="Sign out"
+    >
+      <Icon name="sign-out" size="tab" />
+    </IconButton>
   );
 }

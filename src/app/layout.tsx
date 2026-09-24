@@ -1,8 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { publicConfig } from "@/config/env";
 import { SkipToContent } from "@/components/layout/SkipToContent";
+import { ColorModeScript } from "@/components/theme/ColorModeScript";
 import { RAW_COLORS } from "@/theme/tokens";
 import { ServiceWorkerManager } from "@/features/pwa/components/ServiceWorkerManager";
+import { fontVariableClassName } from "./fonts";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
@@ -59,12 +61,50 @@ export const viewport: Viewport = {
   // Extends under the iPhone's rounded corners and home indicator, which is what makes an
   // installed app look native rather than letterboxed.
   viewportFit: "cover",
-  themeColor: RAW_COLORS.surface,
+
+  /**
+   * The colour the browser paints its own chrome, and the colour flashed before the app
+   * renders. It matches the *page background* (`colors.paper`), not the card surface.
+   *
+   * Declared as a media-qualified pair so a no-JavaScript render, and the moment before the
+   * inline script runs, still gets the right colour for the operating system's mode.
+   *
+   * That pair is not the whole story. It keys off `prefers-color-scheme`, which is wrong for
+   * a user who has explicitly overridden the mode — light OS, dark app. So
+   * `applyColorMode()` overwrites the `content` of **every** `theme-color` meta with the
+   * resolved colour, both in the pre-paint script and whenever the mode changes. Whichever
+   * tag the browser selects then carries the same value. See section 3.4 of
+   * docs/design-tasks/updates/GROUP-24-DARK-MODE.md.
+   */
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: RAW_COLORS.surface },
+    { media: "(prefers-color-scheme: dark)", color: RAW_COLORS.darkSurface },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    /*
+      The font variables go on <html>, not <body>, so `--font-*` is in scope for anything
+      that renders outside the body's subtree — portalled content and the `globalCss`
+      selectors in src/theme/index.ts included.
+    */
+    /*
+      `suppressHydrationWarning` is on <html> because ColorModeScript mutates this element's
+      `class` and `style` before React hydrates. Without it React reports a mismatch on every
+      dark-mode load — the server rendered only the font classes, the DOM now also has
+      `dark` and a `color-scheme`. It is scoped to this one element's own attributes and does
+      not suppress anything inside the tree.
+    */
+    <html lang="en" className={fontVariableClassName} suppressHydrationWarning>
+      <head>
+        {/*
+          First thing in the head, before the stylesheet and before any bundle: the class has
+          to be on <html> before the browser paints or the user sees a light page flash to
+          dark.
+        */}
+        <ColorModeScript />
+      </head>
       <body>
         <Providers>
           <SkipToContent />

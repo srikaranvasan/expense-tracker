@@ -69,17 +69,30 @@ export function PersonArchiveButton({
     );
   }
 
+  /*
+   * The confirmation, inline rather than in a modal (9.1), and an inset block like every other
+   * in-card control group. The outstanding-balance guard is a **warning, not a block**: archiving is
+   * reversible and keeps the balance, so refusing would be protecting the user from nothing.
+   */
   return (
-    <Stack gap="3" borderWidth="1px" borderColor="line" bg="surface.sunken" rounded="lg" p="3">
+    <Stack
+      gap="14px"
+      bg="surface.sunken"
+      borderWidth="thin"
+      borderStyle="solid"
+      borderColor="line.card"
+      paddingInline={{ base: "16px", md: "18px" }}
+      paddingBlock={{ base: "16px", md: "18px" }}
+    >
       {hasOutstandingBalance ? (
         <Alert tone="warning" title="There is still an unsettled balance">
           {formattedBalance} {balanceLabel}. Archiving keeps the balance and history; it only
           removes {personName} from the pickers.
         </Alert>
       ) : (
-        <Text fontSize="sm">
+        <Text fontSize="row">
           Archive{" "}
-          <Text as="span" fontWeight="medium">
+          <Text as="span" fontWeight="600">
             {personName}
           </Text>
           ? Their history is kept, but they will no longer appear when splitting an expense.
@@ -88,7 +101,7 @@ export function PersonArchiveButton({
 
       {error ? <Alert tone="error">{error}</Alert> : null}
 
-      <HStack gap="2">
+      <HStack gap="12px" wrap="wrap">
         <Button
           tone="danger"
           loading={pending}

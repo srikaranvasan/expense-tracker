@@ -31,6 +31,15 @@ export type TransactionListView = {
   accountNames: Record<string, string>;
   categoryNames: Record<string, string>;
   personNames: Record<string, string>;
+  /**
+   * `Category.icon` by id, for the activity row's type swatch.
+   *
+   * A lookup map beside the names rather than a field on the item, for the same reason: the icon
+   * belongs to the category, and duplicating it onto every row that shares one would be a second
+   * copy to keep honest. Carried unresolved — `features/categories/icon-map.ts` is the only place
+   * that decides what an icon string means.
+   */
+  categoryIcons: Record<string, string | null>;
 };
 
 export async function getTransactionListView(
@@ -77,6 +86,8 @@ export async function getTransactionListView(
     accountNames: Object.fromEntries(accounts.map((account) => [account.id, account.name])),
     categoryNames: Object.fromEntries(categories.map((category) => [category.id, category.name])),
     personNames: Object.fromEntries(people.map((person) => [person.id, person.name])),
+    // From the same records as the names, so the swatch costs no extra query.
+    categoryIcons: Object.fromEntries(categories.map((category) => [category.id, category.icon])),
   };
 }
 

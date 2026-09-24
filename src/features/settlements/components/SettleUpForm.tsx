@@ -2,14 +2,19 @@
 
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Flex, HStack, Stack, Text } from "@chakra-ui/react";
+import { Box, Flex, SimpleGrid, Stack, Text } from "@chakra-ui/react";
 import { Alert } from "@/components/feedback/Alert";
-import { Button } from "@/components/ui/Button";
+import { Avatar } from "@/components/ui/Avatar";
+import { FormActions } from "@/components/ui/FormActions";
 import { AmountInput, Field, SelectInput, TextAreaInput, TextInput } from "@/components/ui/Field";
+import { FormLayout } from "@/components/ui/FormLayout";
+import { ReferenceCode } from "@/components/ui/ReferenceCode";
+import { Stamp } from "@/components/ui/Stamp";
 import { LIMITS } from "@/config/constants";
 import type { AccountOption } from "@/features/accounts/view-models/account-view-model";
 import { formatMoney, money, toDecimal } from "@/lib/money";
 import { newClientId } from "@/lib/utils/client-id";
+import { referenceCodeFor } from "@/lib/utils/reference-code";
 import { createSettlementAction } from "../actions/settlement-actions";
 import type { ActionState } from "../actions/settlement-actions";
 import type { SettleableObligationView, SettleUpView } from "../view-models/settlement-view-model";
@@ -98,6 +103,8 @@ export function SettleUpForm({ view, accountOptions, todayValue }: SettleUpFormP
   const balanced = allocatedTotal.equals(amountDecimal);
 
   const clientId = useMemo(() => newClientId(), []);
+  // The reference the settlement will carry, known before the write. See `ExpenseForm`.
+  const referenceCode = useMemo(() => referenceCodeFor({ clientId }), [clientId]);
 
   useEffect(() => {
     if (state.ok) {
@@ -118,149 +125,212 @@ export function SettleUpForm({ view, accountOptions, todayValue }: SettleUpFormP
   const bothDirections = view.direction !== null && view.reverseDirection !== null;
 
   return (
-    <Stack asChild gap="4">
-      <form action={formAction} noValidate>
-        {state.message && !state.ok ? <Alert tone="error">{state.message}</Alert> : null}
+    // No side rail: `SettleUp-Light.html` draws a single centred 820px column. The page caps the
+    // width; `FormLayout` with no rail gives the same emphasised card the other forms have.
+    <FormLayout>
+      <Stack asChild gap="22px">
+        <form action={formAction} noValidate>
+          {state.message && !state.ok ? <Alert tone="error">{state.message}</Alert> : null}
 
-        <input type="hidden" name="clientId" value={clientId} />
-        <input type="hidden" name="personId" value={view.personId} />
+          <input type="hidden" name="clientId" value={clientId} />
+          <input type="hidden" name="personId" value={view.personId} />
 
-        {bothDirections ? (
-          <Field id="direction" label="Which way is the money going?">
-            <SelectInput
-              id="direction"
-              name="direction"
-              value={direction}
-              onChange={(event) => changeDirection(event.target.value)}
-            >
-              <option value="person_to_user">{view.personName} pays you</option>
-              <option value="user_to_person">You pay {view.personName}</option>
-            </SelectInput>
-          </Field>
-        ) : (
-          <>
-            <input type="hidden" name="direction" value={direction} />
-            <Text fontSize="sm" color="content.muted">
-              {direction === "person_to_user"
-                ? `${view.personName} pays you`
-                : `You pay ${view.personName}`}
-            </Text>
-          </>
-        )}
+          {/*
+            Who is paying whom, at the top of the card, in words beside a directional avatar — as
+            drawn. The avatar's fill is the glance-level cue and the sentence is the meaning; the
+            reference sits with them because this form has no rail to put it in.
+          */}
+          <Flex align="center" justify="space-between" gap="3" wrap="wrap">
+            <Flex align="center" gap="10px">
+              <Avatar
+                name={view.personName}
+                relation={direction === "person_to_user" ? "owesYou" : "youOwe"}
+                size="xl"
+              />
+              <Text fontSize="control">
+                {direction === "person_to_user" ? view.personName : "You"}{" "}
+                <Text as="strong" fontWeight="700">
+                  {direction === "person_to_user" ? "pays you" : `pay ${view.personName}`}
+                </Text>
+              </Text>
+            </Flex>
 
-        <Field
-          id="amount"
-          label={`Payment amount (${view.currency})`}
-          hint={`${formatMoney(money(outstanding.toFixed(), view.currency))} outstanding`}
-          errors={errors.amount}
-          required
-        >
-          <AmountInput
-            id="amount"
-            name="amount"
-            value={amount}
-            onChange={(event) => changeAmount(event.target.value)}
-            required
-          />
-        </Field>
-
-        <Stack gap="3" borderWidth="1px" borderColor="line" rounded="card" p="4">
-          <Text fontSize="sm" fontWeight="semibold">
-            Which expenses does this settle?
-          </Text>
-
-          {obligations.map((obligation) => {
-            const allocation = allocations.find(
-              (entry) => entry.expenseSplitId === obligation.expenseSplitId,
-            );
-
-            return (
-              <Box key={obligation.expenseSplitId}>
-                <input
-                  type="hidden"
-                  name={`allocations[${obligations.indexOf(obligation)}].expenseSplitId`}
-                  value={obligation.expenseSplitId}
-                />
-                <input
-                  type="hidden"
-                  name={`allocations[${obligations.indexOf(obligation)}].amount`}
-                  value={allocation?.amount ?? "0"}
-                />
-
-                <Field
-                  id={`allocation-${obligation.expenseSplitId}`}
-                  label={obligation.description}
-                  hint={`${obligation.dateLabel} · ${obligation.formattedRemaining} outstanding`}
-                >
-                  <AmountInput
-                    id={`allocation-${obligation.expenseSplitId}`}
-                    value={allocation?.amount ?? ""}
-                    onChange={(event) =>
-                      changeAllocation(obligation.expenseSplitId, event.target.value)
-                    }
-                    aria-label={`Amount to settle against ${obligation.description}`}
-                  />
-                </Field>
-              </Box>
-            );
-          })}
-
-          <Flex justify="space-between" fontSize="sm">
-            <Text color="content.muted">Allocated</Text>
-            <Text
-              textStyle="amount"
-              fontWeight="semibold"
-              color={balanced ? "positive" : "negative"}
-            >
-              {formatMoney(money(allocatedTotal.toFixed(), view.currency))}
-            </Text>
+            <ReferenceCode code={referenceCode} />
           </Flex>
 
-          {!balanced ? (
-            <Alert tone="warning">
-              The allocated amounts must add up to the payment amount before you can save.
-            </Alert>
-          ) : null}
+          {bothDirections ? (
+            <Field id="direction" label="Which way is the money going?">
+              <SelectInput
+                id="direction"
+                name="direction"
+                value={direction}
+                onChange={(event) => changeDirection(event.target.value)}
+              >
+                <option value="person_to_user">{view.personName} pays you</option>
+                <option value="user_to_person">You pay {view.personName}</option>
+              </SelectInput>
+            </Field>
+          ) : (
+            // One direction is possible, so there is nothing to choose — the sentence above already
+            // said which, and a read-only select would be a control that does nothing.
+            <input type="hidden" name="direction" value={direction} />
+          )}
 
-          {errors.allocations?.length ? (
-            <Alert tone="error">{errors.allocations.join(" ")}</Alert>
-          ) : null}
-        </Stack>
+          <Field
+            id="amount"
+            label={`Payment amount (${view.currency})`}
+            hint={`${formatMoney(money(outstanding.toFixed(), view.currency))} outstanding`}
+            errors={errors.amount}
+            required
+          >
+            <AmountInput
+              id="amount"
+              name="amount"
+              value={amount}
+              onChange={(event) => changeAmount(event.target.value)}
+              required
+            />
+          </Field>
 
-        <Field
-          id="accountId"
-          label="Account (optional)"
-          hint="Leave empty for a cash payment."
-          errors={errors.accountId}
-        >
-          <SelectInput id="accountId" name="accountId" defaultValue="">
-            <option value="">Not tracked</option>
-            {accountOptions.map((option) => (
-              <option key={option.id} value={option.id}>
-                {option.name}
-              </option>
-            ))}
-          </SelectInput>
-        </Field>
+          {/*
+          The allocation box: full ink at 1.5px and 22px of padding, as drawn. Bordered like a control
+          rather than a container card, because the user works inside it.
+        */}
+          <Stack
+            gap="16px"
+            borderWidth="thin"
+            borderStyle="solid"
+            borderColor="line"
+            paddingInline={{ base: "16px", md: "22px" }}
+            paddingBlock={{ base: "16px", md: "22px" }}
+          >
+            <Text fontFamily="heading" fontWeight="700" fontSize="control">
+              Which expenses does this settle?
+            </Text>
 
-        <Field id="date" label="Date" errors={errors.date} required>
-          <TextInput id="date" name="date" type="date" defaultValue={todayValue} required />
-        </Field>
+            {obligations.map((obligation) => {
+              const allocation = allocations.find(
+                (entry) => entry.expenseSplitId === obligation.expenseSplitId,
+              );
 
-        <Field id="notes" label="Notes (optional)" errors={errors.notes}>
-          <TextAreaInput id="notes" name="notes" maxLength={LIMITS.notesMaxLength} />
-        </Field>
+              return (
+                <Box key={obligation.expenseSplitId}>
+                  <input
+                    type="hidden"
+                    name={`allocations[${obligations.indexOf(obligation)}].expenseSplitId`}
+                    value={obligation.expenseSplitId}
+                  />
+                  <input
+                    type="hidden"
+                    name={`allocations[${obligations.indexOf(obligation)}].amount`}
+                    value={allocation?.amount ?? "0"}
+                  />
 
-        <HStack gap="3">
-          <Button type="submit" size="lg" loading={pending} disabled={!balanced} fullWidth>
-            Record settlement
-          </Button>
-          <Button type="button" tone="secondary" size="lg" onClick={() => router.back()}>
-            Cancel
-          </Button>
-        </HStack>
-      </form>
-    </Stack>
+                  <Field
+                    id={`allocation-${obligation.expenseSplitId}`}
+                    label={obligation.description}
+                    hint={`${obligation.dateLabel} · ${obligation.formattedRemaining} outstanding`}
+                  >
+                    <AmountInput
+                      id={`allocation-${obligation.expenseSplitId}`}
+                      value={allocation?.amount ?? ""}
+                      onChange={(event) =>
+                        changeAllocation(obligation.expenseSplitId, event.target.value)
+                      }
+                      aria-label={`Amount to settle against ${obligation.description}`}
+                    />
+                  </Field>
+                </Box>
+              );
+            })}
+
+            {/*
+            The allocated total, with the `BALANCED` stamp beside it once it matches — the fourth audit
+            motif (5.4), and this is the screen the design draws it on.
+
+            The stamp is `aria-hidden` by default and stays that way: the figure next to it already
+            proves the claim, so a reader who cannot make out rotated dashed text has lost nothing.
+            That is the rule the component exists to enforce.
+          */}
+            <Flex
+              justify="space-between"
+              align="center"
+              gap="3"
+              borderTopWidth="hairline"
+              borderColor="line.soft"
+              pt="16px"
+            >
+              <Text textStyle="eyebrow">Allocated</Text>
+              <Flex align="center" gap="10px">
+                <Text
+                  textStyle="amount"
+                  fontSize="cardTitle"
+                  fontWeight="700"
+                  color={balanced ? "positive" : "negative"}
+                >
+                  {formatMoney(money(allocatedTotal.toFixed(), view.currency))}
+                </Text>
+                {balanced ? <Stamp label="Balanced" /> : null}
+              </Flex>
+            </Flex>
+
+            {/*
+            Unbalanced is an `Alert`, never a stamp (5.4). A rotated dashed stamp reading "UNBALANCED"
+            would make a blocking error look ornamental — the stamp's visual language is "checked and
+            approved".
+          */}
+            {!balanced ? (
+              <Alert tone="warning">
+                The allocated amounts must add up to the payment amount before you can save.
+              </Alert>
+            ) : null}
+
+            {errors.allocations?.length ? (
+              <Alert tone="error">{errors.allocations.join(" ")}</Alert>
+            ) : null}
+          </Stack>
+
+          {/* Account and date two up, as drawn — both are short, and neither is typed into. */}
+          <SimpleGrid columns={{ base: 1, md: 2 }} gap={{ base: "22px", md: "20px" }}>
+            <Field
+              id="accountId"
+              label="Account (optional)"
+              hint="Leave empty for a cash payment."
+              errors={errors.accountId}
+            >
+              <SelectInput id="accountId" name="accountId" defaultValue="">
+                <option value="">Not tracked</option>
+                {accountOptions.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.name}
+                  </option>
+                ))}
+              </SelectInput>
+            </Field>
+
+            <Field id="date" label="Date" errors={errors.date} required>
+              <TextInput id="date" name="date" type="date" defaultValue={todayValue} required />
+            </Field>
+          </SimpleGrid>
+
+          <Field id="notes" label="Notes (optional)" errors={errors.notes}>
+            <TextAreaInput id="notes" name="notes" maxLength={LIMITS.notesMaxLength} />
+          </Field>
+
+          <FormActions
+            submitLabel="Record settlement"
+            pending={pending}
+            submitDisabled={!balanced}
+            /*
+              Always the person, never the settlements list. Settling up is an action *on* a person,
+              and abandoning it should return to the balance the user was looking at. See the note in
+              `AccountForm` for why this is not `router.back()`.
+            */
+            onCancel={() => router.push(`/people/${view.personId}`)}
+          />
+        </form>
+      </Stack>
+    </FormLayout>
   );
 }
 

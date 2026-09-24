@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Box } from "@chakra-ui/react";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Card, CardBody } from "@/components/ui/Card";
+import { personParent } from "@/components/layout/Parents";
 import { PersonForm } from "@/features/people/components/PersonForm";
 import { getPersonDetailView } from "@/features/people/queries/person-queries";
 import { isAppError } from "@/lib/errors";
@@ -25,13 +25,13 @@ export default async function EditPersonPage({ params }: { params: Promise<{ id:
 
   return (
     <Box as="section">
-      <PageHeader title="Edit person" description={person.name} />
+      <PageHeader
+        title="Edit person"
+        description={person.name}
+        parent={personParent(person.id, person.name)}
+      />
 
-      <Card>
-        <CardBody>
-          <PersonForm person={person} />
-        </CardBody>
-      </Card>
+      <PersonForm person={person} />
     </Box>
   );
 }

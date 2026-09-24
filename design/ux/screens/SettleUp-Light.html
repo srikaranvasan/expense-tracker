@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settle up — light</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  input,textarea{font-family:'Manrope',sans-serif; font-size:15px; width:100%; padding:13px 14px; border:1.5px solid rgba(30,27,41,0.28); background:#FFFFFF; color:#1E1B29; outline:none;}
+  .su-label{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#5B5770; margin-bottom:8px; display:block;}
+  nav a{font-family:'Space Grotesk',sans-serif; font-size:14.5px; color:#5B5770; text-decoration:none; padding:8px 4px;}
+</style>
+</head>
+<body>
+<div style="width:1440px; height:1000px; background:#FAF7F2; font-family:'Manrope',sans-serif; color:#1E1B29;">
+
+  <div style="height:58px; background:#FFFFFF; border-bottom:2px solid #1E1B29; display:flex; align-items:center; justify-content:space-between; padding:0 32px;">
+    <div style="display:flex; align-items:center; gap:44px;">
+      <div style="display:flex; align-items:center; gap:9px;">
+        <div style="width:16px;height:16px;background:#7FD1C3;border:2px solid #1E1B29;transform:rotate(45deg);"></div>
+        <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px;">Expense Tracker</span>
+      </div>
+      <nav style="display:flex; gap:30px;">
+        <a href="#"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><path d="M2 7L8 2L14 7" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M4 6.5V13.5H12V6.5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>Home</a>
+        <a href="#"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><path d="M1 8H4L6 3L10 13L12 8H15" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Activity</a>
+        <a href="#"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><rect x="1.5" y="4.5" width="13" height="9" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="9.3" y="7.5" width="3.7" height="3" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>Accounts</a>
+        <a href="#" style="color:#1E1B29; font-weight:700; border-bottom:3px solid #7FD1C3; padding-bottom:24px; margin-bottom:-24px;"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><rect x="1" y="5" width="6.5" height="6.5" stroke="currentColor" stroke-width="1.4" fill="none" transform="rotate(45 4.25 8.25)"/><rect x="7.2" y="5" width="6.5" height="6.5" stroke="currentColor" stroke-width="1.4" fill="none" transform="rotate(45 10.45 8.25)"/></svg>People</a>
+        <a href="#"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><rect x="1.5" y="1.5" width="5" height="5" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="9.5" y="1.5" width="5" height="5" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="1.5" y="9.5" width="5" height="5" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="9.5" y="9.5" width="5" height="5" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>Categories</a>
+      </nav>
+    </div>
+    <div style="display:flex; align-items:center; gap:18px;">
+      <div style="display:flex; align-items:center; gap:8px;"><div style="width:24px;height:24px;background:#7FD1C3;border:1.5px solid #1E1B29;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:9.5px;color:#1E1B29;flex-shrink:0;">MI</div><span style="font-size:14px; color:#5B5770;">Meera Iyer</span></div>
+      <div title="Sign out" aria-label="Sign out" style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:2px solid #1E1B29;background:#FFFFFF;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 16 16"><path d="M6 2H3.5C2.7 2 2 2.7 2 3.5V12.5C2 13.3 2.7 14 3.5 14H6" stroke="#1E1B29" stroke-width="1.4" fill="none"/><path d="M6 8H14M14 8L11 5M14 8L11 11" stroke="#1E1B29" stroke-width="1.4" fill="none"/></svg></div>
+    </div>
+  </div>
+
+  <div style="padding:40px; display:flex; justify-content:center;">
+    <div style="width:820px;">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:#1D7A6C;">Settlement &middot; STL-0412</div>
+      <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:30px; margin:8px 0 0;">Settle up</h1>
+      <p style="margin:6px 0 0; color:#5B5770; font-size:15px;">Record a payment between you and Ravi Shankar.</p>
+
+      <div style="margin-top:24px; background:#FFFFFF; border:2px solid #1E1B29; box-shadow:6px 6px 0 #1E1B29; padding:36px 40px;">
+
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:24px;">
+          <div style="width:34px;height:34px;background:#BFEBD2;border:1.5px solid #1E1B29; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:12px;">RS</div>
+          <span style="font-size:15px;">Ravi Shankar <strong>pays you</strong></span>
+        </div>
+
+        <label class="su-label">Payment amount (INR) <span style="color:#D1523F;">*</span></label>
+        <div style="position:relative;">
+          <span style="position:absolute; left:14px; top:12px; font-family:'IBM Plex Mono',monospace; font-size:19px; color:#8B87A0;">&#8377;</span>
+          <input value="1600" style="font-family:'IBM Plex Mono',monospace; font-size:19px; padding-left:32px;">
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8B87A0; margin-top:8px;">₹1,600.00 outstanding</div>
+
+        <div style="margin-top:26px; border:1.5px solid #1E1B29; padding:22px;">
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px;">Which expenses does this settle?</div>
+          <div style="margin-top:16px;">
+            <div style="font-weight:600; font-size:14.5px;">Team dinner at Toit</div>
+            <input value="1600" style="font-family:'IBM Plex Mono',monospace; margin-top:8px;">
+            <div style="font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:#8B87A0; margin-top:6px;">18 Sept 2026 &middot; ₹1,600.00 outstanding</div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:18px; padding-top:16px; border-top:1px solid rgba(30,27,41,0.14);">
+            <span class="su-label" style="margin:0;">Allocated</span>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-family:'IBM Plex Mono',monospace; font-weight:700; font-size:16px; color:#2E8A61;">₹1,600.00</span>
+              <div style="border:2px dashed #2E8A61; color:#2E8A61; font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:600; letter-spacing:.08em; padding:3px 8px; transform:rotate(-6deg);">BALANCED</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:24px;">
+          <div>
+            <label class="su-label">Account (optional)</label>
+            <div style="border:1.5px solid rgba(30,27,41,0.28); background:#FFFFFF; padding:13px 14px; display:flex; justify-content:space-between; align-items:center; color:#1D7A6C;">
+              <span style="display:flex; align-items:center; gap:8px;"><svg width="15" height="15" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="13" height="9" stroke="#1D7A6C" stroke-width="1.3" fill="none"/><rect x="9.3" y="7.5" width="3.7" height="3" stroke="#1D7A6C" stroke-width="1.1" fill="none"/></svg>Not tracked</span>
+              <svg width="12" height="8" viewBox="0 0 12 8"><path d="M1 1L6 6L11 1" stroke="#1D7A6C" stroke-width="2" fill="none"/></svg>
+            </div>
+            <div style="font-size:12px; color:#8B87A0; margin-top:6px;">Leave empty for a cash payment.</div>
+          </div>
+          <div>
+            <label class="su-label">Date <span style="color:#D1523F;">*</span></label>
+            <div style="border:1.5px solid rgba(30,27,41,0.28); background:#FFFFFF; padding:13px 14px; font-family:'IBM Plex Mono',monospace;">09/21/2026</div>
+          </div>
+        </div>
+
+        <label class="su-label" style="margin-top:22px;">Notes (optional)</label>
+        <textarea rows="2" style="resize:none;"></textarea>
+
+        <div style="display:flex; gap:16px; margin-top:30px; align-items:center;">
+          <div style="flex:1; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; padding:15px; text-align:center; background:#7FD1C3; color:#1E1B29; border:2px solid #1E1B29; box-shadow:4px 4px 0 #1E1B29;">Record settlement</div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; padding:15px 26px; text-align:center; color:#1E1B29; text-decoration:underline; text-underline-offset:4px; white-space:nowrap;">Cancel</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

@@ -2,11 +2,13 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Badge, Box, Flex, HStack, Stack, Text } from "@chakra-ui/react";
+import { Box, Flex, HStack, Stack, Text } from "@chakra-ui/react";
 import { Alert } from "@/components/feedback/Alert";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { CategorySwatch } from "./CategorySwatch";
 import { archiveCategoryAction, restoreCategoryAction } from "../actions/category-actions";
 import type {
   CategoryOption,
@@ -77,7 +79,7 @@ export function CategoryManager({ tree, parentOptions, showingArchived }: Catego
         />
       ) : (
         <Card>
-          <Stack gap="0" separator={<Box borderTopWidth="1px" borderColor="line" />}>
+          <Stack gap="0" separator={<Box borderTopWidth="hairline" borderColor="line.soft" />}>
             {tree.map((parent) => (
               <Box key={parent.id}>
                 <CategoryRow
@@ -137,16 +139,22 @@ function CategoryRow({
   onArchive,
   onRestore,
 }: CategoryRowProps) {
+  /*
+   * Editing happens **in place**, not in a modal (9.1). The row becomes an inset block on
+   * `surface.sunken` — the same treatment every other in-card control group gets — so the form appears
+   * exactly where the thing it edits was.
+   */
   if (isEditing) {
     return (
       <Box
-        p="4"
         bg="surface.sunken"
-        borderTopWidth={isChild ? "1px" : undefined}
-        borderColor="line"
+        paddingInline={{ base: "16px", md: "24px" }}
+        paddingBlock={{ base: "16px", md: "20px" }}
+        borderTopWidth={isChild ? "hairline" : undefined}
+        borderColor="line.soft"
       >
-        <Text mb="3" fontSize="sm" fontWeight="medium">
-          Edit “{category.name}”
+        <Text textStyle="eyebrow" mb="16px">
+          Editing {category.name}
         </Text>
         <CategoryForm parentOptions={parentOptions} category={category} onDone={onDone} />
       </Box>
@@ -159,23 +167,51 @@ function CategoryRow({
       justify="space-between"
       gap="3"
       minH="touch"
-      py="3"
-      pe="4"
-      // Children are indented so the hierarchy is visible without a tree control.
-      ps={isChild ? "10" : "4"}
-      borderTopWidth={isChild ? "1px" : undefined}
-      borderColor="line"
+      paddingBlock={{ base: "13px", md: "16px" }}
+      paddingInlineEnd={{ base: "16px", md: "24px" }}
+      /*
+        One level of indent, and only one. The data model allows exactly one level of nesting, so a
+        single 24px step is the whole hierarchy — a tree control with expanders would be machinery for
+        a depth of two.
+      */
+      paddingInlineStart={{
+        base: isChild ? "40px" : "16px",
+        md: isChild ? "48px" : "24px",
+      }}
+      borderTopWidth={isChild ? "hairline" : undefined}
+      borderColor="line.soft"
     >
-      <Text fontSize="sm" fontWeight={isChild ? "normal" : "medium"} truncate>
-        {category.name}
-        {category.isArchived ? (
-          <Badge ml="2" variant="subtle" bg="surface.sunken" color="content.muted">
-            Archived
-          </Badge>
-        ) : null}
-      </Text>
+      <HStack gap="12px" flex="1" minW="0">
+        {/*
+          Colour from the category's **id**, glyph from its `icon` — one resolver, so this is the same
+          square the activity row, the dashboard breakdown and the picker preview show. A child gets the
+          smaller size, which is the second, quieter signal of the hierarchy.
+        */}
+        <CategorySwatch
+          categoryId={category.id}
+          icon={category.icon}
+          size={isChild ? "sm" : "md"}
+        />
 
-      <HStack gap="1" flexShrink="0">
+        {/* The badge stacks below the name on a phone; `StatusBadge` cannot shrink. */}
+        <Flex
+          direction={{ base: "column", md: "row" }}
+          align={{ base: "stretch", md: "center" }}
+          gap={{ base: "6px", md: "10px" }}
+          minW="0"
+        >
+          <Text fontSize="row" fontWeight={isChild ? "500" : "600"} truncate>
+            {category.name}
+          </Text>
+          {category.isArchived ? (
+            <HStack gap="8px" flexShrink="0">
+              <StatusBadge kind="archived" />
+            </HStack>
+          ) : null}
+        </Flex>
+      </HStack>
+
+      <HStack gap="8px" flexShrink="0">
         {category.isArchived ? (
           <Button size="sm" tone="secondary" loading={pending} onClick={onRestore}>
             Restore

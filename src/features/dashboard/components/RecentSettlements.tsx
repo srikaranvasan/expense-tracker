@@ -1,6 +1,7 @@
 import { Box, Text } from "@chakra-ui/react";
-import { AppLink, RowLink } from "@/components/ui/AppLink";
+import { CardActionLink, RowLink } from "@/components/ui/AppLink";
 import { Card, CardBody, CardHeader, CardList } from "@/components/ui/Card";
+import { ReferenceCode } from "@/components/ui/ReferenceCode";
 import type { SettlementView } from "@/features/settlements/view-models/settlement-view-model";
 
 export type RecentSettlementsProps = {
@@ -20,9 +21,7 @@ export function RecentSettlements({ settlements }: RecentSettlementsProps) {
         title="Recent settlements"
         action={
           settlements.length > 0 ? (
-            <AppLink href="/settlements" fontSize="xs" flexShrink="0">
-              See all
-            </AppLink>
+            <CardActionLink href="/settlements">See all</CardActionLink>
           ) : undefined
         }
       />
@@ -50,9 +49,13 @@ export function RecentSettlements({ settlements }: RecentSettlementsProps) {
                 </Text>
               </Box>
 
-              <Text textStyle="amount" fontSize="sm" fontWeight="semibold" flexShrink="0">
-                {settlement.formattedAmount}
-              </Text>
+              {/* Stacked, matching the dashboard's recent-activity rows rather than the wider lists. */}
+              <Box flexShrink="0" textAlign="end">
+                <Text textStyle="amount" fontSize="sm" fontWeight="semibold">
+                  {settlement.formattedAmount}
+                </Text>
+                <ReferenceCode code={settlement.referenceCode} display="block" />
+              </Box>
             </RowLink>
           ))}
         </CardList>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Box } from "@chakra-ui/react";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Card, CardBody } from "@/components/ui/Card";
+import { PARENTS } from "@/components/layout/Parents";
 import { AccountForm } from "@/features/accounts/components/AccountForm";
 import { requireUser } from "@/server/auth/session";
 
@@ -12,13 +12,14 @@ export default async function NewAccountPage() {
 
   return (
     <Box as="section">
-      <PageHeader title="Add account" description="Bank, cash, or credit card." />
+      <PageHeader
+        title="Add account"
+        description="Bank, cash, or credit card."
+        parent={PARENTS.accounts}
+      />
 
-      <Card>
-        <CardBody>
-          <AccountForm currency={user.currency} />
-        </CardBody>
-      </Card>
+      {/* No card here: `AccountForm` renders its own `FormLayout`, which owns the card and the rail. */}
+      <AccountForm currency={user.currency} />
     </Box>
   );
 }

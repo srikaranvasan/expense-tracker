@@ -1,6 +1,8 @@
-import { Badge, Box, HStack, Text } from "@chakra-ui/react";
-import { AppLink, RowLink } from "@/components/ui/AppLink";
+import { Box, HStack, Text } from "@chakra-ui/react";
+import { AppLink, CardActionLink, RowLink } from "@/components/ui/AppLink";
 import { Card, CardBody, CardHeader, CardList } from "@/components/ui/Card";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { AccountSwatch } from "@/features/accounts/components/AccountSwatch";
 import type { AccountView } from "@/features/accounts/view-models/account-view-model";
 
 export type AccountBalancesProps = {
@@ -20,11 +22,7 @@ export function AccountBalances({ accounts }: AccountBalancesProps) {
       <CardHeader
         title="Accounts"
         subtitle="Calculated from your transactions"
-        action={
-          <AppLink href="/accounts" fontSize="xs" flexShrink="0">
-            Manage
-          </AppLink>
-        }
+        action={<CardActionLink href="/accounts">Manage</CardActionLink>}
       />
 
       {accounts.length === 0 ? (
@@ -44,35 +42,40 @@ export function AccountBalances({ accounts }: AccountBalancesProps) {
 
             return (
               <RowLink key={account.id} href={`/accounts/${account.id}`}>
-                <Box minW="0">
-                  <HStack gap="2" minW="0">
-                    <Text fontSize="sm" fontWeight="medium" truncate>
-                      {account.name}
+                <HStack gap="12px" minW="0">
+                  {/*
+                    Type, colour and glyph in one 32px square: teal for a bank, mint for cash, coral
+                    for a card — because a card is a liability rather than money held. The mapping is
+                    total over `AccountType`, so it needs no fallback.
+                  */}
+                  <AccountSwatch type={account.type} />
+
+                  <Box minW="0">
+                    <HStack gap="2" minW="0">
+                      <Text fontSize="row" fontWeight="600" truncate>
+                        {account.name}
+                      </Text>
+                      {account.overLimit ? <StatusBadge kind="overLimit" /> : null}
+                    </HStack>
+                    <Text fontSize="meta" color="content.subtle" truncate>
+                      {isCard && account.formattedAvailableCredit
+                        ? `${account.typeLabel} · ${account.formattedAvailableCredit} available`
+                        : account.typeLabel}
                     </Text>
-                    {account.overLimit ? (
-                      <Badge variant="subtle" bg="negative.surface" color="negative" flexShrink="0">
-                        Over limit
-                      </Badge>
-                    ) : null}
-                  </HStack>
-                  <Text fontSize="xs" color="content.muted" truncate>
-                    {isCard && account.formattedAvailableCredit
-                      ? `${account.typeLabel} · ${account.formattedAvailableCredit} available`
-                      : account.typeLabel}
-                  </Text>
-                </Box>
+                  </Box>
+                </HStack>
 
                 <Box flexShrink="0" textAlign="end">
                   <Text
                     textStyle="amount"
-                    fontSize="sm"
-                    fontWeight="semibold"
+                    fontSize="row"
+                    fontWeight="600"
                     color={amountColor(account)}
                   >
                     {isCard ? account.formattedOutstanding : account.formattedBalance}
                   </Text>
                   {/* The word, not just the sign, says which direction this is. */}
-                  <Text fontSize="xs" color="content.muted">
+                  <Text fontSize="subtitle" color="content.subtle">
                     {isCard ? "owed" : "balance"}
                   </Text>
                 </Box>
@@ -85,10 +88,27 @@ export function AccountBalances({ accounts }: AccountBalancesProps) {
   );
 }
 
+/**
+ * Which colour the row's figure takes.
+ *
+ * `Dashboard-Light.html` draws a card's outstanding balance in coral whatever the limit, and the
+ * matching tile carries a coral top edge unconditionally — the design treats card debt as a liability
+ * on sight, not as an error state. This follows the drawing, with one condition the artboard has no
+ * example of: **nothing owed is not a liability**, so a card at zero reads in plain ink rather than
+ * colouring "₹0.00" as bad news.
+ *
+ * Over-limit is carried by the `overLimit` badge beside the name, in words. Colour is never the only
+ * signal (9.1), which is also why the caption below the figure says "owed" or "balance".
+ */
 function amountColor(account: AccountView): string {
   if (account.type === "credit_card") {
-    // Nothing owed is good news; anything owed is just a fact, not an error.
-    return account.overLimit ? "negative" : "content";
+    return hasOutstanding(account) ? "negative" : "content";
   }
+  // An asset account can only go negative through an overdraft, and that is worth flagging.
   return account.balance.amount.startsWith("-") ? "negative" : "content";
+}
+
+function hasOutstanding(account: AccountView): boolean {
+  const amount = account.outstanding?.amount;
+  return amount !== undefined && Number(amount) > 0;
 }

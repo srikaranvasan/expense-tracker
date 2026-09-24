@@ -42,13 +42,22 @@ export function SyncStatusBar({ userId }: SyncStatusBarProps) {
       py="1.5"
     >
       <HStack maxW="content" mx="auto" w="full" justify="space-between" gap="3">
-        <Text fontSize="xs" color={needsAttention ? "negative" : "content.muted"}>
+        {/*
+         * `content.onSwatch` on the coral fill, not `negative`.
+         *
+         * Coral text on a coral fill measures 3.2:1 in light mode and 1.1:1 in dark, where both
+         * token and fill lighten together. The fill is the signal here; the words only have to be
+         * readable. Group 40.
+         */}
+        <Text fontSize="xs" color={needsAttention ? "content.onSwatch" : "content.muted"}>
           {describeSyncState(status)}
           {status.state === "syncing" && status.pending > 0 ? ` · ${status.pending} queued` : ""}
         </Text>
 
         {needsAttention ? (
-          <Button size="sm" tone="ghost" onClick={retryFailed}>
+          // Same reason, for the same fill: `ghost` labels itself `content`, which inverts in dark
+          // mode and would leave a near-white label on bright coral.
+          <Button size="sm" tone="ghost" color="content.onSwatch" onClick={retryFailed}>
             Try again
           </Button>
         ) : null}

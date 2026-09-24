@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Box } from "@chakra-ui/react";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Card, CardBody } from "@/components/ui/Card";
+import { PARENTS } from "@/components/layout/Parents";
 import { getAccountOptions } from "@/features/accounts/queries/account-queries";
 import { CardPaymentForm } from "@/features/transactions/components/CardPaymentForm";
+import { FormSwitcher } from "@/features/transactions/components/FormSwitcher";
 import { toDateInputValue } from "@/lib/dates";
 import { requireUser } from "@/server/auth/session";
 
@@ -29,19 +30,17 @@ export default async function NewCardPaymentPage({
       <PageHeader
         title="Pay credit card"
         description="Lower what you owe on a card. This is not spending."
+        parent={PARENTS.transactions}
+        action={<FormSwitcher current="/transactions/new/card-payment" />}
       />
 
-      <Card>
-        <CardBody>
-          <CardPaymentForm
-            currency={user.currency}
-            accountOptions={accountOptions}
-            // Defaults to today in the user's timezone, not the server's.
-            todayValue={toDateInputValue(new Date(), user.timezone)}
-            defaultCardId={cardId}
-          />
-        </CardBody>
-      </Card>
+      <CardPaymentForm
+        currency={user.currency}
+        accountOptions={accountOptions}
+        // Defaults to today in the user's timezone, not the server's.
+        todayValue={toDateInputValue(new Date(), user.timezone)}
+        defaultCardId={cardId}
+      />
     </Box>
   );
 }

@@ -60,11 +60,16 @@ export function ErrorState({
       textAlign="center"
       align="center"
     >
-      <Stack gap="2">
-        <Heading as="h1" size="lg">
+      <Stack gap="8px">
+        <Heading
+          as="h1"
+          fontFamily="heading"
+          fontWeight="700"
+          fontSize={{ base: "pageTitleSm", md: "pageTitle" }}
+        >
           {title}
         </Heading>
-        <Text fontSize="sm" color="content.muted">
+        <Text fontSize={{ base: "subtitle", md: "control" }} color="content.subtle">
           {description}
         </Text>
       </Stack>
@@ -79,12 +84,31 @@ export function ErrorState({
       </Stack>
 
       {digest ? (
-        <Box pt="2">
-          <Text fontSize="xs" color="content.subtle">
+        // A reference code in a bordered tint box — the same treatment the form screens give a
+        // transaction reference (7.4), because it is the same kind of thing: an opaque identifier
+        // a human has to read out.
+        <Box
+          bg="brand.muted"
+          borderWidth="thin"
+          borderStyle="solid"
+          borderColor="line"
+          paddingInline="14px"
+          paddingBlock="10px"
+        >
+          <Text textStyle="eyebrow" color="content.onTint">
             Reference for support
           </Text>
           {/* Selectable, so it can be copied into a bug report. */}
-          <Code fontSize="xs" userSelect="all">
+          <Code
+            display="block"
+            mt="4px"
+            bg="transparent"
+            paddingInline="0"
+            fontFamily="mono"
+            fontSize="eyebrow"
+            color="content.onTint"
+            userSelect="all"
+          >
             {digest}
           </Code>
         </Box>

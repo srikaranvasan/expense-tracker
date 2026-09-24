@@ -94,6 +94,14 @@ export type DashboardSpending = {
 export type DashboardCategorySpending = {
   categoryId: string | null;
   name: string;
+  /**
+   * `Category.icon` — free text that may name a glyph this set has, may not, or may be absent.
+   *
+   * Carried so the breakdown can draw the same swatch the category shows everywhere else
+   * (`CategorySwatch`). Resolved at render time rather than here: the resolver is one place, and a
+   * view model that pre-resolved it would be a second.
+   */
+  icon: string | null;
   total: MoneyFigure;
   transactionCount: number;
 };

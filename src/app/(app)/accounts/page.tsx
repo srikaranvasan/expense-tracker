@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, SimpleGrid } from "@chakra-ui/react";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { AppLink } from "@/components/ui/AppLink";
+import { AppLink, CardActionLink } from "@/components/ui/AppLink";
 import { Button } from "@/components/ui/Button";
-import { Card, CardBody, DetailList, DetailRow } from "@/components/ui/Card";
+import { SummaryTile } from "@/components/ui/Card";
 import { calculateAccountTotals } from "@/domain/accounts/calculations";
 import { AccountList } from "@/features/accounts/components/AccountList";
 import { getAccountListView } from "@/features/accounts/queries/account-queries";
@@ -39,25 +39,57 @@ export default async function AccountsPage({
         description="Bank, cash and credit-card accounts."
         action={
           <AppLink href="/accounts/new" textDecoration="none">
-            <Button size="sm">Add account</Button>
+            <Button>Add account</Button>
           </AppLink>
         }
       />
 
+      {/*
+        Summary tiles, not a detail list.
+
+        This screen is not drawn (section 10), so it borrows the dashboard's device: the same four
+        figures appear there, and a user moving between the two screens should recognise them. The
+        `edge` colours are semantic — teal for money held, coral for a liability, mint for headroom,
+        sky for a neutral computed figure — and the same four the dashboard uses.
+
+        Totals cover archived accounts too: an archived account still holds money and still owes it.
+      */}
       {allAccounts.length > 0 ? (
-        <Card mb="5">
-          <CardBody>
-            <DetailList>
-              <DetailRow label="Bank + cash" value={formatMoney(totals.liquidBalance)} emphasis />
-              <DetailRow
-                label="Credit-card outstanding"
-                value={formatMoney(totals.creditCardOutstanding)}
-              />
-              <DetailRow label="Available credit" value={formatMoney(totals.availableCredit)} />
-              <DetailRow label="Net position" value={formatMoney(totals.netPosition)} emphasis />
-            </DetailList>
-          </CardBody>
-        </Card>
+        <SimpleGrid columns={{ base: 2, md: 4 }} gap="3" mb="24px">
+          <SummaryTile
+            label="Bank + cash"
+            value={formatMoney(totals.liquidBalance)}
+            hint="Across all accounts"
+            edge="brand"
+            icon="accounts"
+          />
+          <SummaryTile
+            label="Card outstanding"
+            value={formatMoney(totals.creditCardOutstanding)}
+            hint="Total owed"
+            edge="negative"
+            icon="card"
+          />
+          {/*
+            The hint changes sign with the figure. Available credit goes negative when a card is over
+            its limit, and "Still usable" beside "-₹10,097.00" is a sentence that contradicts its own
+            number. The figure is correct either way; only the caption has to keep up.
+          */}
+          <SummaryTile
+            label="Available credit"
+            value={formatMoney(totals.availableCredit)}
+            hint={totals.availableCredit.isNegative() ? "Over the limit" : "Still usable"}
+            edge="positive"
+            icon="shield"
+          />
+          <SummaryTile
+            label="Net position"
+            value={formatMoney(totals.netPosition)}
+            hint="Held minus owed"
+            edge="info"
+            icon="equals"
+          />
+        </SimpleGrid>
       ) : null}
 
       {accounts.length === 0 ? (
@@ -74,11 +106,15 @@ export default async function AccountsPage({
         <AccountList accounts={accounts} />
       )}
 
-      <Text mt="5" fontSize="sm">
-        <AppLink href={includeArchived ? "/accounts" : "/accounts?archived=true"}>
+      {/*
+        The archived toggle, in the same mono register as the activity list's end-of-list notice: it is
+        a statement about the extent of the list rather than an action on a record.
+      */}
+      <Box mt="24px">
+        <CardActionLink href={includeArchived ? "/accounts" : "/accounts?archived=true"}>
           {includeArchived ? "Hide archived accounts" : "Show archived accounts"}
-        </AppLink>
-      </Text>
+        </CardActionLink>
+      </Box>
     </Box>
   );
 }

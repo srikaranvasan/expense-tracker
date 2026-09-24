@@ -26,8 +26,13 @@
  *
  * Required whenever the shape of what is cached changes, because `activate` deletes any
  * cache whose name is not in the current set.
+ *
+ * v1 -> v2: the app moved from system fonts to three self-hosted faces
+ * (`src/app/fonts.ts`). Existing clients have a shell cached from before the font files
+ * existed, so without a bump their first offline load would still fall back to system
+ * sans — the exact failure the precache is supposed to prevent.
  */
-var VERSION = "v1";
+var VERSION = "v2";
 
 var CACHE_PREFIX = "expense-tracker-";
 
@@ -356,6 +361,10 @@ function precacheShell() {
  * unambiguous: build asset paths are absolute, hashed, and appear in `src`, `href` and the
  * inline flight payload alike. Parsing properly would need a DOM, which a worker does not
  * have.
+ *
+ * It is also used on the stylesheets this finds, to reach the font files — see
+ * `precacheNestedStylesheetAssets`. The same pattern works on CSS because `(` and `)` are
+ * excluded, so a `url(/_next/static/media/x.woff2)` reference yields just the path.
  */
 function extractStaticAssetUrls(html) {
   var pattern = /\/_next\/static\/[^"'\\\s<>()]+/g;
@@ -397,17 +406,93 @@ function precacheOfflineAssets() {
       var urls = extractStaticAssetUrls(html);
       if (urls.length === 0) return null;
 
-      return caches.open(CACHE_NAMES.static).then(function (cache) {
-        return Promise.all(
-          urls.map(function (url) {
-            return precacheUrl(cache, url);
-          })
-        );
-      });
+      return caches
+        .open(CACHE_NAMES.static)
+        .then(function (cache) {
+          return Promise.all(
+            urls.map(function (url) {
+              return precacheUrl(cache, url);
+            })
+          );
+        })
+        .then(function () {
+          // Second pass, because the font files are one level deeper than the document.
+          return precacheNestedStylesheetAssets(urls);
+        });
     })
     .catch(function () {
       return null;
     });
+}
+
+/**
+ * Caches the assets referenced from *inside* a precached stylesheet — in practice, the
+ * self-hosted font files.
+ *
+ * ## Why a second pass is needed
+ *
+ * `next/font` does not put the font files in the HTML. Verified against a real build: the
+ * prerendered `/offline` document contains no `/_next/static/media/` reference at all, only
+ * a link to `/_next/static/css/<hash>.css`, and that stylesheet holds the `@font-face`
+ * rules with `url(/_next/static/media/<hash>.woff2)` inside them. (Next emits `<link
+ * rel="preload" as="font">` only for fonts it can attribute to a specific route; a
+ * CSS-variable font applied at the root layout is not one of those.)
+ *
+ * So extracting from the document alone gets the stylesheet and stops. The browser then
+ * asks for the font files when it applies the CSS, which offline fails — the app renders
+ * in system sans, every amount loses its tabular figures and every eyebrow label loses its
+ * tracking. It looks broken at exactly the moment the user is least able to explain why.
+ *
+ * ## Cost
+ *
+ * Three faces at the weights in `src/app/fonts.ts` come to roughly 200 KB across ~19
+ * files, because Google splits each weight by unicode-range. Every one is referenced by an
+ * `@font-face` rule, so this is the minimum correct set rather than a choice: caching a
+ * subset would leave some glyphs rendering in the fallback face. It is a real cost on a
+ * device that also has to hold unsynced expenses (section 47), and the reason there is no
+ * fourth face.
+ *
+ * Nothing here is font-specific, deliberately. It caches whatever a precached stylesheet
+ * references, so adding a weight, dropping a face or switching to a background image needs
+ * no change — there is no font list to keep in step with `src/app/fonts.ts`.
+ */
+function precacheNestedStylesheetAssets(urls) {
+  var stylesheets = urls.filter(function (url) {
+    return url.indexOf(".css") !== -1;
+  });
+
+  if (stylesheets.length === 0) return Promise.resolve(null);
+
+  return caches.open(CACHE_NAMES.static).then(function (cache) {
+    return Promise.all(
+      stylesheets.map(function (url) {
+        // Read it back out of the cache rather than fetching it again: it was stored a
+        // moment ago, and a second network round trip on the install path is latency the
+        // user is waiting on.
+        return cache
+          .match(url)
+          .then(function (response) {
+            return response ? response.text() : null;
+          })
+          .then(function (css) {
+            if (!css) return null;
+
+            var nested = extractStaticAssetUrls(css);
+            if (nested.length === 0) return null;
+
+            return Promise.all(
+              nested.map(function (nestedUrl) {
+                return precacheUrl(cache, nestedUrl);
+              })
+            );
+          })
+          .catch(function () {
+            // A font that fails to precache costs the right typeface offline, not the app.
+            return null;
+          });
+      })
+    );
+  });
 }
 
 function deleteObsoleteCaches() {
@@ -524,6 +609,7 @@ self.__swInternals = {
   handleNavigation: handleNavigation,
   precacheShell: precacheShell,
   precacheOfflineAssets: precacheOfflineAssets,
+  precacheNestedStylesheetAssets: precacheNestedStylesheetAssets,
   deleteObsoleteCaches: deleteObsoleteCaches,
   clearPrivateCaches: clearPrivateCaches
 };

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import NextLink from "next/link";
-import { Box, Heading, Stack, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
+import { EmptyState } from "@/components/feedback/EmptyState";
 import { Button } from "@/components/ui/Button";
 
 /**
@@ -12,6 +13,9 @@ import { Button } from "@/components/ui/Button";
  *
  * A server component: there is nothing interactive here beyond a link, and nothing to
  * recover from.
+ *
+ * Outside the `(app)` group, so there is no header or navigation — which is why it carries its own
+ * `main#main` for `SkipToContent`, and why the way onward is the dashboard rather than a list.
  */
 export const metadata: Metadata = {
   title: "Page not found",
@@ -20,25 +24,31 @@ export const metadata: Metadata = {
 
 export default function NotFound() {
   return (
-    <Box as="main" id="main" maxW="content" mx="auto" w="full" px="4" py="6">
-      <Stack gap="5" py="10" maxW="md" mx="auto" textAlign="center" align="center">
-        <Stack gap="2">
-          <Heading as="h1" size="lg">
-            Page not found
-          </Heading>
-          <Text fontSize="sm" color="content.muted">
-            {/*
-              Worth being explicit about deletion: a record that was removed on another device
-              is a normal way to arrive here, and "not found" on its own reads like a fault.
-            */}
-            This page does not exist. If you followed a link to a record, it may have been deleted.
-          </Text>
-        </Stack>
-
-        <Button asChild>
-          <NextLink href="/dashboard">Go to dashboard</NextLink>
-        </Button>
-      </Stack>
+    <Box
+      as="main"
+      id="main"
+      maxW="46rem"
+      mx="auto"
+      w="full"
+      paddingInline={{ base: "16px", md: "40px" }}
+      paddingBlock={{ base: "40px", md: "72px" }}
+    >
+      <EmptyState
+        eyebrow="Error 404"
+        title="Page not found"
+        // No `PageHeader` on this route, so the empty state's title is the page's `h1`.
+        titleAs="h1"
+        /*
+          Worth being explicit about deletion: a record that was removed on another device is a
+          normal way to arrive here, and "not found" on its own reads like a fault.
+        */
+        description="This page does not exist. If you followed a link to a record, it may have been deleted."
+        action={
+          <Button asChild>
+            <NextLink href="/dashboard">Go to dashboard</NextLink>
+          </Button>
+        }
+      />
     </Box>
   );
 }

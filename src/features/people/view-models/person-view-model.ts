@@ -4,6 +4,7 @@ import type { Settlement } from "@/domain/settlements/entities";
 import { SETTLEMENT_DIRECTION_LABELS } from "@/domain/settlements/entities";
 import { formatDate } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
+import { referenceCodeFor } from "@/lib/utils/reference-code";
 import { initials } from "@/lib/utils/text";
 import type {
   MoneyDto,
@@ -130,6 +131,14 @@ export type SettlementSummaryView = {
   directionLabel: string;
   amount: MoneyDto;
   formattedAmount: string;
+  /**
+   * The ledger reference — `#A3F09`.
+   *
+   * The person page's settlement history was the one money list group 32 left without a reference,
+   * because these rows read a summary view of their own rather than `SettlementView`. Same derivation
+   * as everywhere else; see `lib/utils/reference-code.ts`.
+   */
+  referenceCode: string | null;
   notes: string | null;
 };
 
@@ -145,6 +154,7 @@ export function toSettlementSummaryView(
     directionLabel: SETTLEMENT_DIRECTION_LABELS[settlement.direction],
     amount: settlement.amount.toJSON(),
     formattedAmount: formatMoney(settlement.amount),
+    referenceCode: referenceCodeFor(settlement),
     notes: settlement.notes,
   };
 }

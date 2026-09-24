@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Flex, SimpleGrid } from "@chakra-ui/react";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { AppLink } from "@/components/ui/AppLink";
+import { AppLink, CardActionLink } from "@/components/ui/AppLink";
 import { Button } from "@/components/ui/Button";
-import { Card, CardBody, DetailList, DetailRow } from "@/components/ui/Card";
+import { SummaryTile } from "@/components/ui/Card";
 import { calculatePeopleTotals } from "@/domain/people/calculations";
 import { PersonList } from "@/features/people/components/PersonList";
 import { getPeopleListView } from "@/features/people/queries/person-queries";
@@ -51,24 +51,33 @@ export default async function PeoplePage({
         description="Contacts you split expenses with."
         action={
           <AppLink href="/people/new" textDecoration="none">
-            <Button size="sm">Add person</Button>
+            <Button>Add person</Button>
           </AppLink>
         }
       />
 
+      {/*
+        Two tiles, matching the dashboard's owed/owing pair — mint for money coming to you, coral for
+        money going out. Kept as two rather than one signed figure: a single net number forces the
+        reader to decode a sign, and getting that wrong is the most consequential misreading here.
+      */}
       {people.length > 0 ? (
-        <Card mb="5">
-          <CardBody>
-            <DetailList>
-              <DetailRow
-                label="People owe you"
-                value={formatMoney(totals.peopleOweUser)}
-                emphasis
-              />
-              <DetailRow label="You owe people" value={formatMoney(totals.userOwesPeople)} />
-            </DetailList>
-          </CardBody>
-        </Card>
+        <SimpleGrid columns={2} gap="3" mb="24px">
+          <SummaryTile
+            label="People owe you"
+            value={formatMoney(totals.peopleOweUser)}
+            hint="Across everyone"
+            edge="positive"
+            icon="arrow-in"
+          />
+          <SummaryTile
+            label="You owe people"
+            value={formatMoney(totals.userOwesPeople)}
+            hint="Across everyone"
+            edge="negative"
+            icon="arrow-out"
+          />
+        </SimpleGrid>
       ) : null}
 
       {people.length === 0 ? (
@@ -91,11 +100,22 @@ export default async function PeoplePage({
         <PersonList people={people} />
       )}
 
-      <Text mt="5" fontSize="sm">
-        <AppLink href={includeArchived ? "/people" : "/people?archived=true"}>
+      {/*
+        Two links, in the same quiet mono register: one narrows the list, one leaves it.
+
+        The settlements link is the group 47 fix for `/settlements` being unreachable. It is not a nav
+        destination and deliberately stays out of the tab bar — a sixth tab would have cost every label
+        about 17% of its width at 402px, reopening the crushed-label bug (group 42 section 3.2). This
+        is what replaces it: `/settlements` already linked *here* ("Settle up with someone"), and this
+        closes the loop, so the list is two taps from anywhere via a tab-bar destination.
+      */}
+      <Flex mt="24px" gap="24px" wrap="wrap" align="center">
+        <CardActionLink href={includeArchived ? "/people" : "/people?archived=true"}>
           {includeArchived ? "Hide archived people" : "Show archived people"}
-        </AppLink>
-      </Text>
+        </CardActionLink>
+
+        <CardActionLink href="/settlements">Settlement history</CardActionLink>
+      </Flex>
     </Box>
   );
 }

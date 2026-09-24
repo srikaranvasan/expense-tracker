@@ -1,6 +1,7 @@
-import { Box, Flex, Stack, Text } from "@chakra-ui/react";
-import { AppLink } from "@/components/ui/AppLink";
-import { Card, CardBody, CardHeader } from "@/components/ui/Card";
+import { Box, Flex, HStack, Text } from "@chakra-ui/react";
+import { CardActionLink } from "@/components/ui/AppLink";
+import { Card, CardBody, CardHeader, CardList } from "@/components/ui/Card";
+import { CategorySwatch } from "@/features/categories/components/CategorySwatch";
 import type { DashboardSpending } from "../view-models/dashboard-view-model";
 
 export type SpendingSummaryProps = {
@@ -24,55 +25,71 @@ export function SpendingSummary({ spending }: SpendingSummaryProps) {
       <CardHeader
         title={`Spending in ${spending.monthLabel}`}
         subtitle="Your own share. Transfers and card payments are not included."
-        action={
-          <AppLink href="/transactions" fontSize="xs" flexShrink="0">
-            View all
-          </AppLink>
-        }
+        action={<CardActionLink href="/transactions">View all</CardActionLink>}
       />
-      <CardBody>
-        <Stack gap="3">
-          <Box>
-            <Text textStyle="amount" fontSize="2xl" fontWeight="semibold">
-              {spending.total.formatted}
-            </Text>
-            <Text fontSize="xs" color="content.muted">
-              {comparisonSentence(spending)}
-            </Text>
-          </Box>
 
-          {spending.topCategories.length > 0 ? (
-            <Stack gap="0" separator={<Box borderTopWidth="1px" borderColor="line" />}>
-              {spending.topCategories.map((category) => (
-                <Flex
-                  key={category.categoryId ?? "uncategorised"}
-                  align="center"
-                  justify="space-between"
-                  gap="4"
-                  py="2"
-                >
-                  <Box minW="0">
-                    <Text fontSize="sm" truncate>
-                      {category.name}
-                    </Text>
-                    <Text fontSize="xs" color="content.muted">
-                      {category.transactionCount}{" "}
-                      {category.transactionCount === 1 ? "expense" : "expenses"}
-                    </Text>
-                  </Box>
-                  <Text textStyle="amount" fontSize="sm" fontWeight="medium" flexShrink="0">
-                    {category.total.formatted}
-                  </Text>
-                </Flex>
-              ))}
-            </Stack>
-          ) : (
-            <Text fontSize="sm" color="content.muted">
-              No expenses recorded this month yet.
-            </Text>
-          )}
-        </Stack>
+      {/*
+        The headline figure sits in its own block above the breakdown, with a rule between them — as
+        drawn. The month's total and the categories that make it up are two different readings, and a
+        26px figure in the same list as 14.5px rows would look like a row.
+      */}
+      <CardBody>
+        <Text textStyle="amount" fontSize={{ base: "figureLg", md: "26px" }} fontWeight="600">
+          {spending.total.formatted}
+        </Text>
+        <Text fontSize="meta" color="content.subtle" mt="2px">
+          {comparisonSentence(spending)}
+        </Text>
       </CardBody>
+
+      {spending.topCategories.length > 0 ? (
+        <CardList>
+          {spending.topCategories.map((category) => (
+            <Flex
+              key={category.categoryId ?? "uncategorised"}
+              align="center"
+              justify="space-between"
+              gap="4"
+              paddingInline={{ base: "16px", md: "24px" }}
+              paddingBlock={{ base: "13px", md: "16px" }}
+            >
+              <HStack gap="12px" minW="0">
+                {/*
+                  A category's colour is derived from its **id** and its glyph from `Category.icon`,
+                  both by one resolver — so the swatch here is the same one the category shows in the
+                  activity list, the picker and the categories screen. `sm` is the 20px the handoff
+                  draws in this breakdown, smaller than an account's 32px because a category is a
+                  label on a row rather than the row's subject.
+                */}
+                <CategorySwatch
+                  categoryId={category.categoryId ?? category.name}
+                  icon={category.icon}
+                  size="sm"
+                />
+                <Box minW="0">
+                  <Text fontSize="row" fontWeight="600" truncate>
+                    {category.name}
+                  </Text>
+                  <Text fontSize="meta" color="content.subtle">
+                    {category.transactionCount}{" "}
+                    {category.transactionCount === 1 ? "expense" : "expenses"}
+                  </Text>
+                </Box>
+              </HStack>
+
+              <Text textStyle="amount" fontSize="row" fontWeight="600" flexShrink="0">
+                {category.total.formatted}
+              </Text>
+            </Flex>
+          ))}
+        </CardList>
+      ) : (
+        <CardBody>
+          <Text fontSize="row" color="content.subtle">
+            No expenses recorded this month yet.
+          </Text>
+        </CardBody>
+      )}
     </Card>
   );
 }

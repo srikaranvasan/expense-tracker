@@ -25,6 +25,36 @@ export async function isExpenseSettled(userId: string, expenseId: string): Promi
 }
 
 /**
+ * Which settlements are standing in the way of editing an expense.
+ *
+ * `isExpenseSettled` answers "may this be edited?" with a boolean, which is all the *guard* needs.
+ * The screen that guard renders needs more: it tells the user to remove a settlement, and before
+ * group 47 it named that settlement without linking to it — on a page that had no back link, no
+ * Cancel and no way out at all (`docs/navigation-tasks/01-NAVIGATION-AUDIT.md` section 6.3).
+ *
+ * Composed from two calls that already existed, so **no repository interface changed**: the
+ * expense's splits, then the allocations pointing at them, then the distinct `settlementId` on each.
+ *
+ * Returns a list rather than one id because an expense genuinely can be blocked by more than one
+ * settlement — different shares can be cleared by different payments — and picking one to link would
+ * hide the others from someone trying to unblock the record.
+ */
+export async function getSettlementsBlockingExpense(
+  userId: string,
+  expenseId: string,
+): Promise<string[]> {
+  const splits = await expenseSplitRepository().listByTransaction(userId, expenseId);
+  if (splits.length === 0) return [];
+
+  const allocations = await settlementAllocationRepository().listBySplitIds(
+    userId,
+    splits.map((split) => split.id),
+  );
+
+  return [...new Set(allocations.map((allocation) => allocation.settlementId))];
+}
+
+/**
  * Settlement status for a whole page of transactions, in two queries.
  *
  * The naive version is one query per row, which on a fifty-row page is fifty round

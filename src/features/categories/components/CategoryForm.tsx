@@ -1,12 +1,13 @@
 "use client";
 
 import { useActionState, useEffect, useMemo } from "react";
-import { HStack, Stack } from "@chakra-ui/react";
+import { Stack } from "@chakra-ui/react";
 import { Alert } from "@/components/feedback/Alert";
-import { Button } from "@/components/ui/Button";
 import { Field, SelectInput, TextInput } from "@/components/ui/Field";
+import { FormActions } from "@/components/ui/FormActions";
 import { LIMITS } from "@/config/constants";
 import { newClientId } from "@/lib/utils/client-id";
+import { CategoryIconPicker } from "./CategoryIconPicker";
 import { createCategoryAction, updateCategoryAction } from "../actions/category-actions";
 import type { ActionState } from "../actions/category-actions";
 import type { CategoryOption, CategoryView } from "../view-models/category-view-model";
@@ -17,7 +18,14 @@ export type CategoryFormProps = {
   /** Top-level categories available as a parent. */
   parentOptions: readonly CategoryOption[];
   category?: CategoryView;
-  onDone?: () => void;
+  /**
+   * Dismisses the inline form, and what Cancel calls.
+   *
+   * Required as of group 27. It was optional, which made Cancel conditional — and a form with a
+   * conditionally reachable way out is the same defect as the clipped-Cancel bug arriving by a
+   * different route. Both existing call sites in `CategoryManager` already passed it.
+   */
+  onDone: () => void;
 };
 
 /**
@@ -37,7 +45,7 @@ export function CategoryForm({ parentOptions, category, onDone }: CategoryFormPr
   const clientId = useMemo(() => newClientId(), []);
 
   useEffect(() => {
-    if (state.ok) onDone?.();
+    if (state.ok) onDone();
   }, [state.ok, onDone]);
 
   const errors = state.fieldErrors ?? {};
@@ -46,7 +54,9 @@ export function CategoryForm({ parentOptions, category, onDone }: CategoryFormPr
   const selectableParents = parentOptions.filter((option) => option.id !== category?.id);
 
   return (
-    <Stack asChild gap="4">
+    // 22px rhythm, matching every other form. No `FormLayout`: this form is rendered *inline* inside
+    // the category list, so it has no page of its own to lay out and no rail to put beside it.
+    <Stack asChild gap="22px">
       <form action={formAction} noValidate>
         {state.message ? (
           <Alert tone={state.ok ? "success" : "error"}>{state.message}</Alert>
@@ -89,16 +99,18 @@ export function CategoryForm({ parentOptions, category, onDone }: CategoryFormPr
           </SelectInput>
         </Field>
 
-        <HStack gap="3">
-          <Button type="submit" loading={pending} fullWidth>
-            {isEdit ? "Save changes" : "Add category"}
-          </Button>
-          {onDone ? (
-            <Button type="button" tone="ghost" onClick={onDone} disabled={pending}>
-              Cancel
-            </Button>
-          ) : null}
-        </HStack>
+        {/*
+          The icon picker group 21 decided on (2.3). It writes a registry name into the `icon` field
+          that already existed; there is no colour input, because the colour is derived from the
+          category's id and so cannot be got wrong.
+        */}
+        <CategoryIconPicker id="category-icon" defaultValue={category?.icon ?? null} />
+
+        <FormActions
+          submitLabel={isEdit ? "Save changes" : "Add category"}
+          pending={pending}
+          onCancel={onDone}
+        />
       </form>
     </Stack>
   );

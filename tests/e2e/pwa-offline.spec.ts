@@ -135,6 +135,52 @@ test.describe("PWA", () => {
     expect(cachedChunks).toBeGreaterThan(0);
   });
 
+  test("renders in the designed faces with no network", async ({ page, context }) => {
+    /*
+     * The typography is not decoration here: mono tabular figures are what keep a column of
+     * amounts aligned, and the eyebrow labels depend on mono's tracking. If the font files
+     * are not cached, the first offline load silently falls back to system sans and the app
+     * looks broken at the moment the user is least able to explain why.
+     *
+     * `document.fonts.load()` is the point of the test — it forces the browser to actually
+     * fetch each face, so offline this can only resolve from the service worker's cache.
+     * Checking `getComputedStyle` alone would pass on a fallback font, because the CSS
+     * variable resolves whether or not the file arrived.
+     */
+    await page.goto("/login");
+    await waitForServiceWorkerControl(page);
+    await page.goto("/login");
+
+    await context.setOffline(true);
+    await page.reload();
+
+    const available = await page.evaluate(async () => {
+      const faces = ["Manrope", "Space Grotesk", "IBM Plex Mono"];
+      const result: Record<string, boolean> = {};
+
+      for (const family of faces) {
+        try {
+          await document.fonts.load(`600 16px "${family}"`);
+          result[family] = document.fonts.check(`600 16px "${family}"`);
+        } catch {
+          result[family] = false;
+        }
+      }
+
+      return result;
+    });
+
+    expect(available).toEqual({
+      Manrope: true,
+      "Space Grotesk": true,
+      "IBM Plex Mono": true,
+    });
+
+    // And the body is actually asking for Manrope, not inheriting a system stack.
+    const bodyFamily = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
+    expect(bodyFamily).toContain("Manrope");
+  });
+
   test("shows the offline page for a route that was never visited", async ({ page, context }) => {
     await page.goto("/login");
     await waitForServiceWorkerControl(page);

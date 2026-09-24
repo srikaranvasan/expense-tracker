@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Box, Flex, Stack, Text } from "@chakra-ui/react";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PARENTS } from "@/components/layout/Parents";
 import { AppLink } from "@/components/ui/AppLink";
 import { Card, CardBody, CardHeader, DetailList, DetailRow } from "@/components/ui/Card";
+import { ReferenceCode } from "@/components/ui/ReferenceCode";
 import { SettlementDeleteButton } from "@/features/settlements/components/SettlementDeleteButton";
 import { getSettlementDetailView } from "@/features/settlements/queries/settlement-queries";
 import { isAppError } from "@/lib/errors";
@@ -30,9 +32,16 @@ export default async function SettlementDetailPage({
 
   return (
     <Stack as="section" gap="5">
+      {/*
+        The back link here is the one that closes a genuine dead end, not just a missing convenience.
+        `/settlements` is not in the tab bar (group 42 section 3.2), so before this the only way off
+        this page was a nav destination in another section entirely — the page's own list was
+        unreachable. See audit section 6.1.
+      */}
       <PageHeader
         title={settlement.formattedAmount}
         description={`${settlement.directionLabel} · ${settlement.dateLabel}`}
+        parent={PARENTS.settlements}
       />
 
       <Card>
@@ -47,9 +56,34 @@ export default async function SettlementDetailPage({
                 <AppLink href={`/people/${settlement.personId}`}>{settlement.personName}</AppLink>
               }
             />
-            <DetailRow label="Account" value={settlement.accountName ?? "Not tracked"} />
+            {/*
+              Linked in group 47, so this page treats its account the way it already treated its
+              person. "Not tracked" is a real state — a settlement can be recorded without saying
+              which account the cash moved through — and stays plain text.
+            */}
+            <DetailRow
+              label="Account"
+              value={
+                settlement.accountId && settlement.accountName ? (
+                  <AppLink href={`/accounts/${settlement.accountId}`}>
+                    {settlement.accountName}
+                  </AppLink>
+                ) : (
+                  (settlement.accountName ?? "Not tracked")
+                )
+              }
+            />
             <DetailRow label="Date" value={settlement.dateLabel} />
             <DetailRow label="Recorded" value={settlement.createdAtLabel} />
+            {/*
+              A settlement has one card, not the expense screens' separate "Record" block, so the
+              reference joins the payment's own rows — last, because it names the row rather than
+              describing the payment.
+            */}
+            <DetailRow
+              label="Reference"
+              value={<ReferenceCode code={settlement.referenceCode} fontSize="meta" />}
+            />
           </DetailList>
 
           {settlement.notes ? (

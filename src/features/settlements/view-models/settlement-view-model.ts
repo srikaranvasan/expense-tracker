@@ -3,6 +3,7 @@ import type { Settlement, SettlementAllocation } from "@/domain/settlements/enti
 import { SETTLEMENT_DIRECTION_LABELS } from "@/domain/settlements/entities";
 import { formatDate, formatDateTime, toDateInputValue } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
+import { referenceCodeFor } from "@/lib/utils/reference-code";
 import type { MoneyDto, SettlementDirection, SplitStatus } from "@/types/common";
 
 /**
@@ -15,6 +16,11 @@ import type { MoneyDto, SettlementDirection, SplitStatus } from "@/types/common"
 export type SettlementView = {
   id: string;
   clientId: string;
+  /**
+   * The ledger reference — `#A3F09`. Same derivation and the same nullability reasoning as
+   * `TransactionListItem.referenceCode`; see `lib/utils/reference-code.ts`.
+   */
+  referenceCode: string | null;
   personId: string;
   personName: string;
   direction: SettlementDirection;
@@ -45,6 +51,7 @@ export function toSettlementView(
   return {
     id: settlement.id,
     clientId: settlement.clientId,
+    referenceCode: referenceCodeFor(settlement),
     personId: settlement.personId,
     personName: context.personName ?? "Someone",
     direction: settlement.direction,

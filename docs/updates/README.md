@@ -1,7 +1,11 @@
 # Implementation Updates
 
-One document per task group from `13-MVP-TASK-GROUP.md`, written for a developer
+One document per task group from `13-MVP-TASK-GROUP.md` (groups 1-20), written for a developer
 who did not do the work.
+
+The visual redesign is a separate series: groups 21-41 in
+`design-tasks/02-DESIGN-TASK-GROUPS.md`, with its own updates folder at
+`design-tasks/updates/`.
 
 Each document records what was built, which files it touched, the decisions taken
 and rejected, the business rules it enforces, how it was verified, and what was

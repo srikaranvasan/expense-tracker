@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add expense — light</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  input,textarea{font-family:'Manrope',sans-serif; font-size:15px; width:100%; padding:13px 14px; border:1.5px solid rgba(30,27,41,0.28); background:#FFFFFF; color:#1E1B29; outline:none;}
+  input::placeholder,textarea::placeholder{color:#A6A2BC;}
+  .ax-label{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#5B5770; margin-bottom:8px; display:block;}
+  nav a{font-family:'Space Grotesk',sans-serif; font-size:14.5px; color:#5B5770; text-decoration:none; padding:8px 4px;}
+</style>
+</head>
+<body>
+<div style="width:1440px; height:950px; background:#FAF7F2; font-family:'Manrope',sans-serif; color:#1E1B29;">
+
+  <div style="height:58px; background:#FFFFFF; border-bottom:2px solid #1E1B29; display:flex; align-items:center; justify-content:space-between; padding:0 32px;">
+    <div style="display:flex; align-items:center; gap:44px;">
+      <div style="display:flex; align-items:center; gap:9px;">
+        <div style="width:16px;height:16px;background:#7FD1C3;border:2px solid #1E1B29;transform:rotate(45deg);"></div>
+        <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:16px;">Expense Tracker</span>
+      </div>
+      <nav style="display:flex; gap:30px;">
+        <a href="#"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><path d="M2 7L8 2L14 7" stroke="currentColor" stroke-width="1.6" fill="none"/><path d="M4 6.5V13.5H12V6.5" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>Home</a>
+        <a href="#" style="color:#1E1B29; font-weight:700; border-bottom:3px solid #7FD1C3; padding-bottom:24px; margin-bottom:-24px;"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><path d="M1 8H4L6 3L10 13L12 8H15" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Activity</a>
+        <a href="#"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><rect x="1.5" y="4.5" width="13" height="9" stroke="currentColor" stroke-width="1.5" fill="none"/><rect x="9.3" y="7.5" width="3.7" height="3" stroke="currentColor" stroke-width="1.3" fill="none"/></svg>Accounts</a>
+        <a href="#"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><rect x="1" y="5" width="6.5" height="6.5" stroke="currentColor" stroke-width="1.4" fill="none" transform="rotate(45 4.25 8.25)"/><rect x="7.2" y="5" width="6.5" height="6.5" stroke="currentColor" stroke-width="1.4" fill="none" transform="rotate(45 10.45 8.25)"/></svg>People</a>
+        <a href="#"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:6px; vertical-align:-2px;"><rect x="1.5" y="1.5" width="5" height="5" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="9.5" y="1.5" width="5" height="5" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="1.5" y="9.5" width="5" height="5" stroke="currentColor" stroke-width="1.4" fill="none"/><rect x="9.5" y="9.5" width="5" height="5" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>Categories</a>
+      </nav>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div style="display:flex; align-items:center; gap:8px;"><div style="width:24px;height:24px;background:#7FD1C3;border:1.5px solid #1E1B29;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:9.5px;color:#1E1B29;flex-shrink:0;">MI</div><span style="font-size:14px; color:#5B5770;">Meera Iyer</span></div>
+      <div title="Sign out" aria-label="Sign out" style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;border:2px solid #1E1B29;background:#FFFFFF;flex-shrink:0;"><svg width="15" height="15" viewBox="0 0 16 16"><path d="M6 2H3.5C2.7 2 2 2.7 2 3.5V12.5C2 13.3 2.7 14 3.5 14H6" stroke="#1E1B29" stroke-width="1.4" fill="none"/><path d="M6 8H14M14 8L11 5M14 8L11 11" stroke="#1E1B29" stroke-width="1.4" fill="none"/></svg></div>
+    </div>
+  </div>
+
+  <div style="padding:40px 40px 60px; max-width:1360px; margin:0 auto;">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+      <div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:#1D7A6C;">Record &middot; TXN-08232</div>
+        <h1 style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:30px; margin:8px 0 0;">Add expense</h1>
+        <p style="margin:6px 0 0; color:#5B5770; font-size:15px;">Something you paid for yourself.</p>
+      </div>
+      <div style="display:flex; gap:12px;">
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; padding:12px 18px; background:#FFFFFF; border:2px solid #1E1B29;"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:7px; vertical-align:-2px;"><path d="M2 5H14M14 5L11 2M14 5L11 8" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M14 11H2M2 11L5 8M2 11L5 14" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Split instead</div>
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; padding:12px 18px; background:#FFFFFF; border:2px solid #1E1B29;"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:7px; vertical-align:-2px;"><path d="M2 8H14M9 3L14 8L9 13" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>Transfer</div>
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; padding:12px 18px; background:#FFFFFF; border:2px solid #1E1B29;"><svg width="14" height="14" viewBox="0 0 16 16" style="margin-right:7px; vertical-align:-2px;"><rect x="2" y="3" width="12" height="10" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="2" y1="6.5" x2="14" y2="6.5" stroke="currentColor" stroke-width="1.5"/></svg>Pay card</div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:24px; margin-top:28px;">
+      <div style="flex:1.4; background:#FFFFFF; border:2px solid #1E1B29; box-shadow:6px 6px 0 #1E1B29; padding:36px 40px;">
+        <label class="ax-label">Amount (INR) <span style="color:#D1523F;">*</span></label>
+        <div style="position:relative; margin-bottom:22px;">
+          <span style="position:absolute; left:14px; top:12px; font-family:'IBM Plex Mono',monospace; font-size:19px; color:#8B87A0;">&#8377;</span>
+          <input placeholder="0.00" style="font-family:'IBM Plex Mono',monospace; font-size:19px; padding-left:32px;">
+        </div>
+
+        <label class="ax-label">What was it for? <span style="color:#D1523F;">*</span></label>
+        <input placeholder="Groceries" style="margin-bottom:22px;">
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          <div>
+            <label class="ax-label">Paid from <span style="color:#D1523F;">*</span></label>
+            <div style="border:1.5px solid rgba(30,27,41,0.28); background:#FFFFFF; padding:13px 14px; display:flex; justify-content:space-between; align-items:center;">
+              <span style="display:flex; align-items:center; gap:8px;"><svg width="15" height="15" viewBox="0 0 16 16"><rect x="1.5" y="4.5" width="13" height="9" stroke="#1E1B29" stroke-width="1.3" fill="none"/><rect x="9.3" y="7.5" width="3.7" height="3" stroke="#1E1B29" stroke-width="1.1" fill="none"/></svg>HDFC Savings</span>
+              <svg width="12" height="8" viewBox="0 0 12 8"><path d="M1 1L6 6L11 1" stroke="#1E1B29" stroke-width="2" fill="none"/></svg>
+            </div>
+          </div>
+          <div>
+            <label class="ax-label">Category</label>
+            <div style="border:1.5px solid rgba(30,27,41,0.28); background:#FFFFFF; padding:13px 14px; display:flex; justify-content:space-between; align-items:center; color:#1D7A6C;">
+              <span style="display:flex; align-items:center; gap:8px;"><svg width="14" height="14" viewBox="0 0 16 16" style=""><rect x="1.5" y="1.5" width="5" height="5" stroke="#1D7A6C" stroke-width="1.4" fill="none"/><rect x="9.5" y="1.5" width="5" height="5" stroke="#1D7A6C" stroke-width="1.4" fill="none"/><rect x="1.5" y="9.5" width="5" height="5" stroke="#1D7A6C" stroke-width="1.4" fill="none"/><rect x="9.5" y="9.5" width="5" height="5" stroke="#1D7A6C" stroke-width="1.4" fill="none"/></svg>No category</span>
+              <svg width="12" height="8" viewBox="0 0 12 8"><path d="M1 1L6 6L11 1" stroke="#1D7A6C" stroke-width="2" fill="none"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:22px;">
+          <label class="ax-label">Date <span style="color:#D1523F;">*</span></label>
+          <div style="border:1.5px solid rgba(30,27,41,0.28); background:#FFFFFF; padding:13px 14px; display:flex; justify-content:space-between; font-family:'IBM Plex Mono',monospace; width:260px;">
+            <span>09/21/2026</span>
+            <svg width="14" height="14" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="11" stroke="#1E1B29" stroke-width="1.4" fill="none"/><line x1="2" y1="6.5" x2="14" y2="6.5" stroke="#1E1B29" stroke-width="1.4"/></svg>
+          </div>
+        </div>
+
+        <div style="margin-top:22px;">
+          <label class="ax-label">Notes (optional)</label>
+          <textarea rows="2" style="resize:none;"></textarea>
+        </div>
+
+        <div style="display:flex; gap:16px; margin-top:30px; align-items:center;">
+          <div style="flex:1; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; padding:15px; text-align:center; background:#7FD1C3; color:#1E1B29; border:2px solid #1E1B29; box-shadow:4px 4px 0 #1E1B29;">Record expense</div>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:15px; padding:15px 26px; text-align:center; color:#1E1B29; text-decoration:underline; text-underline-offset:4px; white-space:nowrap;">Cancel</div>
+        </div>
+      </div>
+
+      <div style="flex:1; display:flex; flex-direction:column; gap:16px;">
+        <div style="background:#DCF3EE; border:1.5px solid #1E1B29; padding:22px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <svg width="14" height="14" viewBox="0 0 16 16"><line x1="2" y1="6" x2="14" y2="6" stroke="#1D7A6C" stroke-width="2"/><line x1="2" y1="10" x2="14" y2="10" stroke="#1D7A6C" stroke-width="2"/></svg>
+            <span style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#1D7A6C;">Why this matters</span>
+          </div>
+          <p style="font-size:13.5px; color:#4A465B; line-height:1.6; margin:10px 0 0;">This is the most-used screen in the app. Amount is first and autofocused &mdash; every other field can wait.</p>
+        </div>
+        <div style="background:#FFFFFF; border:1.5px solid rgba(30,27,41,0.2); padding:22px;">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#5B5770;">Reference</div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:14px; margin-top:8px; color:#1E1B29;">TXN-08232 &middot; draft</div>
+          <div style="font-size:12.5px; color:#8B87A0; margin-top:6px;">Assigned once recorded. Every entry keeps a permanent reference, like a ledger line.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

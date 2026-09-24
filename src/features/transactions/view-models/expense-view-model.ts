@@ -5,6 +5,7 @@ import { isSharedExpense } from "@/domain/transactions/entities";
 import { isSpending, userSpendingFor } from "@/domain/transactions/calculations";
 import { formatDate, formatDateTime, formatRelativeDayLabel, toDateInputValue } from "@/lib/dates";
 import { formatMoney } from "@/lib/money";
+import { referenceCodeFor } from "@/lib/utils/reference-code";
 import type { MoneyDto, SplitStatus, TransactionType } from "@/types/common";
 
 /**
@@ -25,6 +26,16 @@ const TYPE_LABELS: Record<TransactionType, string> = {
 export type TransactionListItem = {
   id: string;
   clientId: string;
+  /**
+   * The ledger reference — `#A3F09`.
+   *
+   * Formatted here rather than in the component, like `formattedAmount` beside it. Derived from
+   * `clientId`, so it is the same code before and after sync; see `lib/utils/reference-code.ts`.
+   *
+   * Nullable because a server-allocated sequence would be null before its first sync, and typing it
+   * nullable now means that change does not ripple through every consumer.
+   */
+  referenceCode: string | null;
   type: TransactionType;
   typeLabel: string;
   description: string;
@@ -84,6 +95,7 @@ export function toTransactionListItem(
   return {
     id: transaction.id,
     clientId: transaction.clientId,
+    referenceCode: referenceCodeFor(transaction),
     type: transaction.type,
     typeLabel: TYPE_LABELS[transaction.type],
     description: transaction.description,

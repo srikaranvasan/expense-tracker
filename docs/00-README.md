@@ -27,6 +27,20 @@ The application is a personal finance and shared-expense tracker built as a sing
 9. `09-SECURITY.md` - Security and data isolation
 10. `10-IMPLEMENTATION-PLAN.md` - Recommended build sequence
 
+## Task groups and updates
+
+Work is tracked as numbered task groups. Each completed group gets an update document written
+for a developer who did not do the work.
+
+| | Task groups | Updates |
+| --- | --- | --- |
+| MVP build, groups 1-20 | `13-MVP-TASK-GROUP.md` | `updates/` |
+| Visual redesign, groups 21-41 | `design-tasks/02-DESIGN-TASK-GROUPS.md` | `design-tasks/updates/` |
+
+`design-tasks/01-DESIGN-SYSTEM.md` holds the rules the redesign groups build against: the
+design tokens, typography, geometry, icon registry and component contracts derived from the UX
+handoff in `design/ux/`.
+
 ## Architecture Principle
 
 Build the MVP as a modular monolith.

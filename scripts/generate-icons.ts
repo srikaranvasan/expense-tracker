@@ -39,15 +39,29 @@ function parseHex(hex: string): { r: number; g: number; b: number } {
 }
 
 const BRAND = parseHex(RAW_COLORS.brand);
-const MARK = parseHex(RAW_COLORS.surface);
 
 /**
- * iOS applies its own rounding to `apple-touch-icon`, so that one is drawn square.
- * Android applies a mask to `purpose: "maskable"`, which is why those keep their glyph
- * inside the central safe zone. Everything else gets the squircle radius itself, because
- * desktop installers render the icon as-is.
+ * The mark is drawn in **ink**, not in the surface colour.
+ *
+ * Before the restyle the brand was a saturated indigo and the bars were white. The brand
+ * fill is now a pastel teal, on which white measures 1.4:1 — the mark would effectively
+ * vanish. Ink on teal measures 9.5:1, and it is the same rule the app itself follows:
+ * anything drawn inside a coloured fill is ink, in both themes
+ * (docs/design-tasks/01-DESIGN-SYSTEM.md section 6.1).
  */
-const SQUIRCLE_RADIUS_RATIO = 0.2237;
+const MARK = parseHex(RAW_COLORS.ink);
+
+/**
+ * Zero. Nothing in this design is rounded, including its own icon.
+ *
+ * It used to be 0.2237 (a squircle), which was right for the previous visual language. Kept
+ * as a named constant rather than deleted because the three variants still differ and the
+ * reason each one is shaped the way it is still needs saying: iOS rounds
+ * `apple-touch-icon` itself, Android masks anything marked `purpose: "maskable"` and can
+ * crop 20% off each edge, and desktop installers render the icon as-is. Only the last of
+ * those ever showed this radius.
+ */
+const SQUIRCLE_RADIUS_RATIO = 0;
 
 // --- PNG encoding -----------------------------------------------------------
 
@@ -229,7 +243,9 @@ function renderIcon(size: number, variant: IconVariant): Buffer {
   widths.forEach((widthRatio, row) => {
     const top = glyphTop + row * (barHeight + gap);
     const right = glyphLeft + glyphWidth * widthRatio;
-    paint(canvas, size, roundedRect(glyphLeft, top, right, top + barHeight, barHeight / 2), MARK);
+    // Square ends. Previously `barHeight / 2`, which drew pills — the one shape this
+    // design has none of.
+    paint(canvas, size, roundedRect(glyphLeft, top, right, top + barHeight, 0), MARK);
   });
 
   return encodePng(size, size, canvas);
@@ -258,7 +274,7 @@ function renderSvg(): string {
       const width = (glyph * widthRatio).toFixed(2);
       return (
         `  <rect x="${inset.toFixed(2)}" y="${y}" width="${width}" ` +
-        `height="${barHeight.toFixed(2)}" rx="${(barHeight / 2).toFixed(2)}" fill="#ffffff" />`
+        `height="${barHeight.toFixed(2)}" fill="${RAW_COLORS.ink}" />`
       );
     })
     .join("\n");

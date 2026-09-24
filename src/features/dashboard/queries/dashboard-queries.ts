@@ -162,12 +162,15 @@ async function getDashboardSpending(
     .filter((id): id is string => id !== null);
   const categories = await categoryRepository().findManyByIds(userId, categoryIds);
   const categoryNames = new Map(categories.map((category) => [category.id, category.name]));
+  // The same records already fetched for the names, so the swatch costs no extra query.
+  const categoryIcons = new Map(categories.map((category) => [category.id, category.icon]));
 
   const topCategories: DashboardCategorySpending[] = byCategory.map((entry) => ({
     categoryId: entry.categoryId,
     name: entry.categoryId
       ? (categoryNames.get(entry.categoryId) ?? "Unknown category")
       : "Uncategorised",
+    icon: entry.categoryId ? (categoryIcons.get(entry.categoryId) ?? null) : null,
     total: toMoneyFigure(entry.amount),
     transactionCount: entry.transactionCount,
   }));

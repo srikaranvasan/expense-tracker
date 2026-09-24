@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { HStack, Stack } from "@chakra-ui/react";
+import { HStack, Stack, Text } from "@chakra-ui/react";
 import { Alert } from "@/components/feedback/Alert";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PARENTS } from "@/components/layout/Parents";
 import { AppLink } from "@/components/ui/AppLink";
 import { Button } from "@/components/ui/Button";
-import { Card, CardBody, CardHeader, DetailList, DetailRow } from "@/components/ui/Card";
+import { Card, CardBody, CardHeader, CardList, DetailList, DetailRow } from "@/components/ui/Card";
+import { Icon } from "@/components/icons/Icon";
+import { RowLink } from "@/components/ui/AppLink";
+import { StatusBadge } from "@/components/ui/StatusBadge";
 import { AccountArchiveButton } from "@/features/accounts/components/AccountArchiveButton";
+import { AccountSwatch } from "@/features/accounts/components/AccountSwatch";
 import { getAccountDetailView } from "@/features/accounts/queries/account-queries";
 import { isAppError } from "@/lib/errors";
 import { formatMoney, money } from "@/lib/money";
@@ -34,6 +39,17 @@ export default async function AccountDetailPage({ params }: { params: Promise<{ 
       <PageHeader
         title={account.name}
         description={[account.typeLabel, account.institutionName].filter(Boolean).join(" · ")}
+        parent={PARENTS.accounts}
+        /*
+          The identity swatch, in the meta slot above the title — the same square the list row and the
+          dashboard show for this account, so the page is recognisable as the row that was tapped.
+        */
+        meta={
+          <HStack gap="10px">
+            <AccountSwatch type={account.type} />
+            {account.isArchived ? <StatusBadge kind="archived" /> : null}
+          </HStack>
+        }
         action={
           <HStack gap="2">
             {/* Offered from the card itself, where the outstanding balance is on screen. */}
@@ -111,13 +127,23 @@ export default async function AccountDetailPage({ params }: { params: Promise<{ 
         </CardBody>
       </Card>
 
+      {/*
+        One card, one row, and the whole row is the target — far easier to hit on a phone than a small
+        text link inside it, and it matches every other list row in the app.
+      */}
       <Card>
         <CardHeader title="Activity" />
-        <CardBody>
-          <AppLink href={`/transactions?accountId=${account.id}`} fontSize="sm">
-            View transactions for this account
-          </AppLink>
-        </CardBody>
+        <CardList>
+          <RowLink href={`/transactions?accountId=${account.id}`}>
+            <HStack gap="12px" minW="0">
+              <Icon name="activity" size="tile" color="content.muted" />
+              <Text fontSize="row" fontWeight="600">
+                View transactions for this account
+              </Text>
+            </HStack>
+            <Icon name="chevron-right" size="inline" color="content.subtle" />
+          </RowLink>
+        </CardList>
       </Card>
 
       <Card>

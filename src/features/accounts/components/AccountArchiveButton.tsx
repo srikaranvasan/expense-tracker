@@ -68,11 +68,26 @@ export function AccountArchiveButton({
     );
   }
 
+  /*
+   * The confirmation, inline rather than in a modal (9.1).
+   *
+   * An inset block on `surface.sunken` with the soft card outline — the same treatment the split
+   * editor and the card-details fieldset get, because it is the same thing: a group of controls inside
+   * a card. It appears where the button was, so the question is asked in the place the answer belongs.
+   */
   return (
-    <Stack gap="3" borderWidth="1px" borderColor="line" bg="surface.sunken" rounded="lg" p="3">
-      <Text fontSize="sm">
+    <Stack
+      gap="14px"
+      bg="surface.sunken"
+      borderWidth="thin"
+      borderStyle="solid"
+      borderColor="line.card"
+      paddingInline={{ base: "16px", md: "18px" }}
+      paddingBlock={{ base: "16px", md: "18px" }}
+    >
+      <Text fontSize="row">
         Archive{" "}
-        <Text as="span" fontWeight="medium">
+        <Text as="span" fontWeight="600">
           {accountName}
         </Text>
         ? Its transactions are kept, but it will no longer be selectable for new ones.
@@ -80,7 +95,7 @@ export function AccountArchiveButton({
 
       {error ? <Alert tone="error">{error}</Alert> : null}
 
-      <HStack gap="2">
+      <HStack gap="12px" wrap="wrap">
         <Button
           tone="danger"
           loading={pending}

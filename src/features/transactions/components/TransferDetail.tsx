@@ -1,9 +1,13 @@
-import { Stack, Text } from "@chakra-ui/react";
+import { Box, Stack } from "@chakra-ui/react";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { PARENTS } from "@/components/layout/Parents";
 import { AppLink } from "@/components/ui/AppLink";
 import { Button } from "@/components/ui/Button";
 import { Card, CardBody, CardHeader, DetailList, DetailRow } from "@/components/ui/Card";
-import { NotesBlock } from "./ExpenseDetail";
+import { TintPanel } from "@/components/ui/FormLayout";
+import { ReferenceCode } from "@/components/ui/ReferenceCode";
+import { StatusBadge } from "@/components/ui/StatusBadge";
+import { AccountRef, NotesBlock } from "./ExpenseDetail";
 import { TransferDeleteButton } from "./TransferDeleteButton";
 import type { TransferDetailView } from "../view-models/transfer-view-model";
 
@@ -24,6 +28,7 @@ export function TransferDetail({ transfer }: TransferDetailProps) {
       <PageHeader
         title={transfer.description}
         description={`${transfer.typeLabel} · ${transfer.dateLabel}`}
+        parent={PARENTS.transactions}
         action={
           <AppLink href={`/transactions/${transfer.id}/edit`} textDecoration="none">
             <Button size="sm" tone="secondary">
@@ -34,20 +39,37 @@ export function TransferDetail({ transfer }: TransferDetailProps) {
       />
 
       <Card>
-        <CardHeader title="Details" />
+        {/* The same chip the activity row carried, so the record is recognisable from the list. */}
+        <CardHeader title="Details" action={<StatusBadge kind="transfer" />} />
         <CardBody>
           <DetailList>
             <DetailRow label="Amount" value={transfer.formattedAmount} emphasis />
-            <DetailRow label="From" value={transfer.fromAccountName ?? "—"} />
-            <DetailRow label="To" value={transfer.toAccountName ?? "—"} />
+            {/*
+              Both ends are links now. A transfer is the one record whose whole meaning is the two
+              accounts it names, and it named them as plain text (audit 4.4).
+            */}
+            <DetailRow
+              label="From"
+              value={<AccountRef id={transfer.fromAccountId} name={transfer.fromAccountName} />}
+            />
+            <DetailRow
+              label="To"
+              value={<AccountRef id={transfer.toAccountId} name={transfer.toAccountName} />}
+            />
             <DetailRow label="Date" value={transfer.dateLabel} />
           </DetailList>
 
           {transfer.notes ? <NotesBlock notes={transfer.notes} /> : null}
 
-          <Text fontSize="xs" color="content.muted" mt="4">
-            A transfer moves money between your own accounts, so it is not counted as spending.
-          </Text>
+          {/*
+            The same tint panel the form's side rail uses, without its eyebrow — the card header
+            already says what is being explained.
+          */}
+          <Box mt="18px">
+            <TintPanel>
+              A transfer moves money between your own accounts, so it is not counted as spending.
+            </TintPanel>
+          </Box>
         </CardBody>
       </Card>
 
@@ -55,6 +77,10 @@ export function TransferDetail({ transfer }: TransferDetailProps) {
         <CardHeader title="Record" />
         <CardBody>
           <DetailList>
+            <DetailRow
+              label="Reference"
+              value={<ReferenceCode code={transfer.referenceCode} fontSize="meta" />}
+            />
             <DetailRow label="Created" value={transfer.createdAtLabel} />
             <DetailRow label="Last updated" value={transfer.updatedAtLabel} />
           </DetailList>

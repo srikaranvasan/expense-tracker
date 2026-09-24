@@ -28,8 +28,15 @@ test.describe("authentication", () => {
   test("a new user can register, sign out, and sign back in", async ({ page }) => {
     const account = await registerAndSignIn(page);
 
-    // Registration lands on a working dashboard, not a blank shell.
-    await expect(page.getByRole("heading", { name: /dashboard/i })).toBeVisible();
+    /*
+     * Registration lands on a working dashboard, not a blank shell.
+     *
+     * Pinned to the `h1`, and to the exact name. A brand-new account sees an empty state as well as
+     * the page header, and group 40 made that empty state's title a real heading — "Your dashboard is
+     * waiting on some data" — so `/dashboard/i` now matches two headings. Both are correct; the test
+     * has to say which one it means.
+     */
+    await expect(page.getByRole("heading", { level: 1, name: "Dashboard" })).toBeVisible();
 
     await signOut(page);
 

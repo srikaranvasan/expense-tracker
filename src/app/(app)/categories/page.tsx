@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Box, Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { AppLink } from "@/components/ui/AppLink";
+import { CardActionLink } from "@/components/ui/AppLink";
 import { CategoryManager } from "@/features/categories/components/CategoryManager";
 import {
   getCategoryTreeView,
@@ -38,11 +38,11 @@ export default async function CategoriesPage({
         showingArchived={includeArchived}
       />
 
-      <Text mt="5" fontSize="sm">
-        <AppLink href={includeArchived ? "/categories" : "/categories?archived=true"}>
+      <Box mt="24px">
+        <CardActionLink href={includeArchived ? "/categories" : "/categories?archived=true"}>
           {includeArchived ? "Hide archived categories" : "Show archived categories"}
-        </AppLink>
-      </Text>
+        </CardActionLink>
+      </Box>
     </Box>
   );
 }

@@ -16,6 +16,18 @@ const initialState: FormState = { ok: false };
 /**
  * Currency and timezone are captured at sign-up because every later amount and
  * every daily/monthly grouping depends on them.
+ *
+ * ## Not drawn, so built from sign-in's parts
+ *
+ * Section 10 lists sign-up as a screen with no artboard. It uses the same card, eyebrow, heading,
+ * field, button and foot-of-card link as `Login.html`, at the same measurements, so the two read as
+ * one pair rather than two designs.
+ *
+ * **One deliberate difference: no prefix icons.** Sign-in has two fields and two glyphs everybody
+ * recognises. This form has six, and three of them — name, currency, timezone — have no glyph in the
+ * registry that means what they mean (`people` is the section icon for *other* people, not for the
+ * visitor's own name). Icons on the two familiar fields and nothing on the rest reads as unfinished,
+ * so the form carries none. Its mono labels are doing the same work.
  */
 export function RegisterForm({ defaultTimezone }: { defaultTimezone: string }) {
   const [state, formAction, pending] = useActionState(registerAction, initialState);
@@ -29,7 +41,8 @@ export function RegisterForm({ defaultTimezone }: { defaultTimezone: string }) {
   const errors = state.fieldErrors ?? {};
 
   return (
-    <Stack asChild gap="4">
+    // 22px, matching sign-in. Six fields rather than two, so this is the taller card of the pair.
+    <Stack asChild gap="22px">
       <form action={formAction} noValidate>
         {state.message ? (
           <Alert tone={state.ok ? "success" : "error"}>{state.message}</Alert>
@@ -111,12 +124,16 @@ export function RegisterForm({ defaultTimezone }: { defaultTimezone: string }) {
           </Field>
         </SimpleGrid>
 
-        <Button type="submit" size="lg" fullWidth loading={pending}>
+        <Button type="submit" size="lg" fullWidth loading={pending} mt="8px">
           Create account
         </Button>
 
-        <Text fontSize="sm" color="content.muted" textAlign="center">
-          Already have an account? <AppLink href="/login">Sign in</AppLink>
+        <Text fontSize="subtitle" color="content.muted" textAlign="center" mt="2px">
+          Already have an account?{" "}
+          {/* Same ink treatment as sign-in's, so the two cards' feet match. */}
+          <AppLink href="/login" color="content" textUnderlineOffset="3px">
+            Sign in
+          </AppLink>
         </Text>
       </form>
     </Stack>
